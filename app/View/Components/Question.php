@@ -4,8 +4,15 @@ namespace App\View\Components;
 
 use Illuminate\View\Component;
 
+/**
+ * Class Question
+ * @package App\View\Components
+ */
 class Question extends Component
 {
+    /**
+     * @var
+     */
     public $question;
     /**
      * Create a new component instance.

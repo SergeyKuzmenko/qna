@@ -2,24 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
+use Conner\Likeable\Likeable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/**
- * Class Answer
- * @package App\Models
- */
 class Answer extends Model
 {
-    use HasFactory;
+    use HasFactory, Likeable;
 
     /**
      * @var string[]
      */
     protected $fillable = ['body'];
+
+    protected $with = ['comments'];
 
     /**
      * @return BelongsTo
@@ -42,10 +39,6 @@ class Answer extends Model
         return $this->morphMany(Comment::class, 'commentable');
     }
 
-    /**
-     * @param int $id
-     * @return Builder[]|Collection
-     */
     public function getUserAnswers(int $id)
     {
         return $this->with('question', function ($query) {

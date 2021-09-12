@@ -2,16 +2,8 @@
 @section('title', 'Задать вопрос')
 
 @section('styles')
-    <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/select2-bootstrap4.min.css') }}" rel="stylesheet">
-{{--    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/monokai-sublime.min.css" rel="stylesheet" />--}}
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <style>
-        #editor-container {
-            min-height: 150px;
-            height: auto;
-        }
-    </style>
+    <link href="https://highlightjs.org/static/demo/styles/stackoverflow-dark.css" rel="stylesheet">
 @endsection
 
 @section('content-header')
@@ -41,6 +33,7 @@
                                            name="title"
                                            class="form-control"
                                            id="title"
+                                           value="{{ old('title') }}"
                                            placeholder="Сформулируйте вопрос так, чтобы сразу было понятно, о чём речь"
                                            required
                                     >
@@ -58,7 +51,8 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="body">Детали вопроса</label>
-                                    <div id="editor-container"></div>
+                                    <div class="editor-container"></div>
+                                    <textarea name="body" style="display:none;" id="body">{{ old('body') }}</textarea>
                                 </div>
 
                                 <div class="form-group">
@@ -87,8 +81,6 @@
     </section>
 @endsection
 @section('scripts')
-    <script src="{{ asset('js/select2.full.min.js') }}"></script>
-    <script src="{{ asset('js/select2.ru.js') }}"></script>
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 
@@ -119,17 +111,20 @@
         });
     </script>
     <script>
-        var quill = new Quill('#editor-container', {
+        const editor = new Quill('.editor-container', {
             modules: {
                 syntax: true,
                 toolbar: [
-                    [{header: [1, 2, 3, false]}],
                     ['bold', 'italic', 'underline', 'blockquote'],
                     ['link', 'image', 'code-block']
                 ]
             },
             placeholder: 'Опишите в подробностях свой вопрос',
             theme: 'snow'
+        });
+        let HtmlContent = document.getElementById('body');
+        editor.on('text-change', function () {
+            HtmlContent.innerHTML = editor.root.innerHTML;
         });
     </script>
 @endsection

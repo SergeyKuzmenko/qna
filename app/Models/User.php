@@ -30,7 +30,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function profile() {
+    public function profile()
+    {
         return $this->hasOne(Profile::class);
     }
 
@@ -67,6 +68,7 @@ class User extends Authenticatable
             ->orderBy('questions_count', 'desc')
             ->paginate(20);
     }
+
     public function getUsersByAnswers()
     {
         return $this
@@ -75,6 +77,7 @@ class User extends Authenticatable
             ->orderBy('answers_count', 'desc')
             ->paginate(20);
     }
+
     public function getUsersByRating()
     {
         return $this
@@ -87,33 +90,7 @@ class User extends Authenticatable
 
     public function isFollowing(User $user)
     {
-        return !! $this->tags()->where('user_id', $user->id)->count();
-    }
-
-    public function getUserProfileData($id)
-    {
-        $data = collect();
-
-        $profile = Profile::where('user_id', $id)->first();
-
-        $questions = Question::where('user_id', $id)->withCount('answers')
-            ->without(['answers', 'user'])
-            ->latest()->take(3)
-            ->get();
-
-        $questions_count = Question::where('user_id', $id)->count();
-
-        $answers = Answer::where('user_id', $id)->with('question', function ($query){
-                $query->select(['id', 'title'])->without(['tags', 'answers']);
-            })
-            ->orderBy('created_at')
-            ->limit(3)->get();
-
-        $answers_count = Answer::where('user_id', $id)->count();
-
-        $data->put('profile', $profile)->put('last_questions', $questions)->put('questions_count', $questions_count)->put('last_answers', $answers)->put('answers_count', $answers_count);
-
-        return $data;
+        return !!$this->tags()->where('user_id', $user->id)->count();
     }
 
 }

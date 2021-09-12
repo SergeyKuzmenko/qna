@@ -2,7 +2,7 @@
     <div class="member-card pt-2 pb-2">
         <div class="thumb-lg member-thumb mx-auto">
             <a href="{{ route('tag.info', ['slug' => $tag->slug]) }}">
-                <img src="{{ $tag->icon }}" class="img-rounded w-100"
+                <img src="{{ asset($tag->icon) }}" class="img-rounded w-100"
                      alt="{{ $tag->title }}">
             </a>
         </div>

@@ -45,6 +45,25 @@ class QuestionController extends Controller
 
     public function show(Question $id)
     {
+        $id->increment('views');
+        //dd($id->toArray());
         return view('question', ['question' => $id]);
+    }
+
+    public function subscribe(Question $id)
+    {
+        if ($id) {
+            $id->subscribe();
+            return redirect()->back()->with('status', 'Вы подписались на вопрос');
+        }
+    }
+
+    public function unsubscribe(Question $id)
+    {
+        if ($id) {
+            $id->unsubscribe();
+            return redirect()->back()->with('status', 'Вы отписались от вопроса');
+        }
+
     }
 }

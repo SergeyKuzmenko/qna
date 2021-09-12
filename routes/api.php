@@ -25,3 +25,4 @@ Route::get('/tags', function (Request $request, Tag $tag) {
         return response()->json([]);
     }
 })->name('api.tags');
+

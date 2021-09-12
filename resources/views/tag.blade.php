@@ -22,7 +22,7 @@
                         <div class="card-body box-profile">
                             <div class="text-center">
                                 <div class="thumb-lg member-thumb mx-auto">
-                                    <img class="img-rounded w-100" src="{{ $tag->icon }}" alt="{{ $tag->title }}">
+                                    <img class="img-rounded w-100" src="{{ asset($tag->icon) }}" alt="{{ $tag->title }}">
                                 </div>
                             </div>
 

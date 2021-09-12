@@ -8,10 +8,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-/**
- * Class Tag
- * @package App\Models
- */
 class Tag extends Model
 {
 
@@ -20,7 +16,7 @@ class Tag extends Model
     /**
      * @var string[]
      */
-    protected $fillable = ['title', 'slug', 'icon'];
+    protected $fillable = ['title', 'slug', 'description', 'icon'];
 
     /**
      * @return BelongsToMany

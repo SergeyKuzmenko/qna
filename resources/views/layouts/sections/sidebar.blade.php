@@ -36,17 +36,15 @@
                         <p>Мои ответы</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" style="border-bottom: 1px solid #4b545c;">
                     <a href="{{ route('my.tags') }}"
                        class="nav-link {{ request()->routeIs('my.tags') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user-tag"></i>
                         <p>Мои теги</p>
                     </a>
                 </li>
-
-                <hr class="dropdown-divider">
             @endauth
-            <li class="nav-item">
+            <li class="nav-item mt-1">
                 <a href="{{ route('feed') }}" class="nav-link {{ request()->routeIs('feed') ? 'active' : '' }}">
                     <i class="nav-icon fas fa-list-ul"></i>
                     <p>Все вопросы</p>

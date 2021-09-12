@@ -7,6 +7,7 @@ use App\Models\Profile;
 use App\Models\Question;
 use App\Models\Tag;
 use App\Models\User;
+use Database\Factories\TagFactory;
 use Faker\Generator;
 use Illuminate\Database\Seeder;
 
@@ -70,8 +71,10 @@ class DatabaseSeeder extends Seeder
 
     public function run(Generator $faker)
     {
+        $this->call(TagSeeder::class);
+
         $users = User::factory()->count($this->totalUsers)->has(Profile::factory())->create();
-        $tags = Tag::factory()->count($this->totalTags)->create();
+        $tags = Tag::get();
 
         $users->each(function ($user) use ($faker, $tags) {
             $user->tags()->attach(
@@ -100,6 +103,7 @@ class DatabaseSeeder extends Seeder
                                     ->make()
                             );
                     });
+
             });
 
     }

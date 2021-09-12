@@ -9,11 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-/**
- * Class Question
- * @package App\Models
- */
 class Question extends Model
 {
     use HasFactory;
@@ -26,12 +23,12 @@ class Question extends Model
     /**
      * @var array[]
      */
-    protected $with = ['user.profile', 'tags', 'answers'];
+    protected $with = ['user.profile', 'tags', 'answers', 'comments', 'answers.user', 'solutions'];
 
     /**
      * @var array[]
      */
-    protected $withCount = ['answers'];
+    protected $withCount = ['answers', 'subscribers'];
 
     /**
      * @return BelongsTo
@@ -39,14 +36,6 @@ class Question extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * @return BelongsTo
-     */
-    public function profile()
-    {
-        return $this->belongsTo(Profile::class);
     }
 
     /**
@@ -62,12 +51,35 @@ class Question extends Model
      */
     public function answers()
     {
-        return $this->hasMany(Answer::class);
+        return $this->hasMany(Answer::class)->when(auth()->user(), function ($query){
+            $query->withExists(['likes as is_liked' => function ($query) {
+                $query->where('user_id', auth()->user()->id);
+            }]);
+        });
     }
 
+    /**
+     * @return HasMany
+     */
+    public function solutions()
+    {
+        return $this->hasMany(Answer::class)->where('is_solution', true);
+    }
+
+    /**
+     * @return MorphMany
+     */
     public function comments()
     {
         return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    /**
+     * @return BelongsToMany
+     */
+    public function subscribers()
+    {
+        return $this->belongsToMany(User::class, 'question_subscriber');
     }
 
     /**
@@ -76,7 +88,7 @@ class Question extends Model
     public function getAllQuestionsByNew()
     {
         return $this
-            ->with('answers')
+            ->without(['answers', 'comments'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
     }
@@ -96,7 +108,6 @@ class Question extends Model
     public function getAllQuestionsByWithoutAnswers()
     {
         return $this
-            ->with('answers')
             ->doesntHave('answers')
             ->orderBy('created_at', 'desc')
             ->paginate(20);
@@ -117,8 +128,8 @@ class Question extends Model
     {
         return $this
             ->whereHas('tags', function ($query) use ($tag) {
-            $query->whereIn('tags.id', $tag);
-        })
+                $query->whereIn('tags.id', $tag);
+            })
             ->withCount('answers')
             ->with(['user.profile', 'tags'])
             ->when($by == 'new', function ($query) {
@@ -134,25 +145,6 @@ class Question extends Model
     }
 
     /**
-     * @return int
-     */
-    public function solutions()
-    {
-//        return $this
-//            ->answers()
-//            ->where('is_solution', true)
-//            ->count();
-    }
-
-    /**
-     * @return bool
-     */
-    public function getHasSolutionsAttribute()
-    {
-        return $this->solutions() ? true : false;
-    }
-
-    /**
      * @param $request
      * @return $this
      */
@@ -164,15 +156,47 @@ class Question extends Model
         $this->complexity = $request->complexity;
         $this->save();
         $this->tags()->attach($request->tags);
+        $this->subscribe();
         return $this;
     }
 
     /**
-     *
+     * @return array|false
      */
     public function subscribe()
     {
-
+        if (auth()->guest()) {
+            return false;
+        } else {
+            return $this->subscribers()->syncWithoutDetaching(auth()->user()->id);
+        }
     }
 
+    /**
+     * @return false|int
+     */
+    public function unsubscribe()
+    {
+        if (auth()->guest()) {
+            return false;
+        } else {
+            return $this->subscribers()->detach(auth()->user()->id);
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsSubscribedAttribute()
+    {
+        return $this->subscribers()->whereIn('user_id', [auth()->user()->id])->count() ? true : false;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCountSubscribersAttribute()
+    {
+        return $this->subscribers()->count();
+    }
 }

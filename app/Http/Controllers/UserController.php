@@ -27,7 +27,6 @@ class UserController extends Controller
                 $users = $user->getUsersByDefault();
                 break;
         }
-        //dd($users);
         return view('users', ['users' => $users->appends(request()->query()), 'title' => 'Пользователи']);
     }
 
@@ -35,12 +34,12 @@ class UserController extends Controller
     {
         $profile = Profile::where('username', $username)->first();
         if ($profile){
-            $user = User::where('id', $profile->id)->first();
-            $data = $user->getUserProfileData($profile->id);
-            //dd($data->toArray());
-            return view('user', ['user' => $data]);
+            $user = $profile->user()->withCount(['questions', 'answers'])->first();
+            $question = $user->questions()->without('answers')->limit(3)->get();
+            $answers = $user->answers()->limit(3)->get();
+            return view('user', ['user' => $user, 'questions' => $question, 'answers' => $answers]);
         } else {
-            abort(404);
+            return abort(404);
         }
     }
 }

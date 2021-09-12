@@ -19,37 +19,7 @@
                 <div class="col-md-12">
                     @if($answers->count() > 0)
                         @foreach( $answers->sortByDesc('created_at') as $answer )
-                            <div class="card {{ $answer->is_solution ? 'card-outline card-success' : '' }}">
-                                <div class="card-body">
-                                    <div class="tab-content">
-                                        <div class="post p-2">
-                                            <div class="user-block">
-                                                <a href="{{ $answer->question->user->profile->link }}">
-                                                    <img class="img-circle img-bordered-sm"
-                                                         src="{{ $answer->question->user->profile->avatar }}"
-                                                         alt="{{ $answer->question->user->profile->full_name }}">
-                                                </a>
-                                                <span class="username">
-                                              <a href="{{ route('question.show', ['id' => $answer->question->id]) }}">
-                                                  {{ $answer->question->title }}</a>
-                                            </span>
-                                                <span
-                                                    class="description">{{ Carbon\Carbon::parse($answer->created_at)->diffForHumans() }}</span>
-                                            </div>
-                                            <div class="answer-body">
-                                                {{ $answer->body }}
-                                            </div>
-                                        </div>
-                                        <span class="float-right">
-                                        <a href="{{ route('question.show', ['id' => $answer->question->id]) }}"
-                                           class="link-black text-sm">
-                                            <i class="far fa-comments mr-1"></i>
-                                            Перейти к вопросу
-                                        </a>
-                                    </span>
-                                    </div>
-                                </div>
-                            </div>
+                            <x-answer :answer="$answer"></x-answer>
                         @endforeach
                     @else
                         <div class="col-md-12">

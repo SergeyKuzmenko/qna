@@ -29,6 +29,7 @@ class ProfileFactory extends Factory
             'first_name' => explode(' ', $name)[0],
             'last_name' => explode(' ', $name)[1],
             'education' => $this->faker->address,
+            'location' => $this->faker->streetAddress(),
             'skills' => $this->faker->words(3, true),
             'short_about' => $this->faker->sentence(3),
             'about' => $this->faker->text(),

@@ -6,14 +6,16 @@ use Illuminate\View\Component;
 
 class Answer extends Component
 {
+    public $answer;
+
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($answer)
     {
-        //
+        $this->answer = $answer;
     }
 
     /**

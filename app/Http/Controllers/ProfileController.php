@@ -11,8 +11,13 @@ class ProfileController extends Controller
         $this->middleware('auth');
     }
 
-    public function show(User $user)
+    public function show()
     {
-        return view('profile.show', ['user' => $user->getUserProfileData(auth()->user()->id)]);
+        $user = auth()->user();
+        $question = auth()->user()->questions()->without('answers')->limit(3)->get();
+        $answers = auth()->user()->answers()->limit(3)->get();
+
+        //dd($user->toArray());
+        return view('user', ['user' => $user, 'questions' => $question, 'answers' => $answers]);
     }
 }

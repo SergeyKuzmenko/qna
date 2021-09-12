@@ -17,21 +17,19 @@ class MyController extends Controller
         $questions = Question::whereHas('tags', function ($query) use ($tagsId) {
             $query->whereIn('tags.id', $tagsId);
         })->withCount('answers')->with(['user.profile', 'tags'])->orderBy('created_at')->paginate(20);
-        return view('my.feed', ['questions' => $questions]);
+        return view('my.feed', ['questions' => $questions->appends(request()->query())]);
     }
 
     public function questions()
     {
         $questions = auth()->user()->questions()->withCount('answers')->orderBy('created_at', 'asc')->paginate(20);
-        return view('my.questions', ['questions' => $questions]);
+        return view('my.questions', ['questions' => $questions->appends(request()->query())]);
     }
 
     public function answers()
     {
-        $answers = auth()->user()->answers()->with('question', function ($query) {
-            $query->select(['id', 'title', 'created_at', 'user_id'])->without(['tags', 'answers']);
-        })->paginate(20);
-        return view('my.answers', ['answers' => $answers]);
+        $answers = auth()->user()->answers()->with(['question', 'user'])->paginate(20);
+        return view('my.answers', ['answers' => $answers->appends(request()->query())]);
     }
 
     public function tags()
@@ -39,7 +37,7 @@ class MyController extends Controller
         $tags = auth()->user()->tags()->withExists(['followers as is_follow' => function ($query) {
             $query->where('user_id', auth()->user()->id);
         }])->withCount(['questions', 'followers'])->paginate(20);
-        return view('my.tags', ['tags' => $tags]);
+        return view('my.tags', ['tags' => $tags->appends(request()->query())]);
     }
 
 }
