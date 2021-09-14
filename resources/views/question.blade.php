@@ -1,9 +1,6 @@
 @extends('layouts.app')
 @section('title', $question->title)
 
-@section('styles')
-    <link href="{{ asset('public/css/editor-light.css') }}" rel="stylesheet">
-@endsection
 @section('content-header')
     <section class="content-header">
         <div class="container-fluid">
@@ -35,11 +32,13 @@
                                 </span>
                             </a>
                             <span class="description">
-                                <span class="created_at">
+                                <span class="created_at"
+                                      title="Вопрос задан: {{ Carbon\Carbon::parse($question->created_at)->isoformat("D MMMM Y в H:m") }}"
+                                >
                                     <i class="far fa-clock"></i>
-                                    {{ Carbon\Carbon::parse($question->created_at)->isoformat("D MMMM Y в H:m") }}
+                                    {{ Carbon\Carbon::parse($question->created_at)->diffForHumans() }}
                                 </span>
-                                <span class="views">
+                                <span class="views" title="Количество просмотров">
                                     &#8231; <i class="far fa-eye"></i> {{ $question->views }}
                                 </span>
                             </span>
@@ -51,7 +50,6 @@
                             {!! $question->body !!}
                         </div>
                         @foreach($question->tags as $tag)
-
                             <a href="{{ route('tag.info', ['slug' => $tag->slug]) }}"
                                class="link-black text-sm mr-2">
                                 <a href="{{ route('tag.info', ['slug' => $tag->slug]) }}"
@@ -62,7 +60,6 @@
                                     {{ $tag->title }}
                                 </a>
                             </a>
-
                         @endforeach
 
                     </div>
@@ -95,15 +92,19 @@
                             @endauth
                         @endif
                     @endauth
-                    <div class="float-right">
-                        <div class="dropdown float-right dropleft">
-                            <button class="btn btn-default btn-block" type="button" id="answer-menu"
-                                    data-toggle="dropdown">
+                    <div class="question-settings float-right">
+                        <div class="dropdown dropleft">
+                            <button class="btn btn-default btn-block"
+                                    type="button"
+                                    id="question-{{ $question->id }}-menu"
+                                    data-toggle="dropdown"
+                                    title="Управление вопросом"
+                            >
                                 <i class="fas fa-ellipsis-h"></i>
                             </button>
-                            <div class="dropdown-menu" aria-labelledby="answer-menu">
-                                <a class="dropdown-item" href="#">Кому понравилось</a>
-                                <a class="dropdown-item text-danger" href="#">Пожаловаться</a>
+                            <div class="dropdown-menu" aria-labelledby="question-{{ $question->id }}-menu">
+                                <a class="dropdown-item" href="#who-subscribed-{{ $question->id }}">Кто подписался</a>
+                                <a class="dropdown-item text-danger" href="#abuse-question-{{ $question->id }}">Пожаловаться</a>
                             </div>
                         </div>
                     </div>
@@ -111,19 +112,46 @@
                 @if($question->comments->count())
                     <div class="comments-box collapse" id="question-comments-{{ $question->id }}">
                         @foreach($question->comments as $comment)
-                            <div class="card-footer card-comments">
-                                <div class="card-comment">
+                            <div class="card-footer card-comments" style="padding-bottom: 0px; padding-top: 0px;">
+                                <div class="card-comment border-top">
                                     <a href="{{ $comment->author->profile->link }}">
-                                        <img class="img-circle img-sm" src="{{ $comment->author->profile->avatar }}"
+                                        <img class="img-circle img-sm mt-2" src="{{ $comment->author->profile->avatar }}"
                                              alt="{{ $comment->author->profile->full_name }}">
                                     </a>
-                                    <div class="comment-text">
+                                    <div class="comment-text mt-2">
                                         <span class="username">
                                             <a href="{{ $comment->author->profile->link }}">{{ $comment->author->profile->full_name }}</a>
                                           <span
-                                              class="text-muted float-right">{{ Carbon\Carbon::parse($comment->created_at)->diffForHumans() }}</span>
+                                              class="text-muted float-right"
+                                              title="Написано: {{ Carbon\Carbon::parse($comment->created_at)->isoformat("D MMMM Y в H:m") }}"
+                                          >
+                                              {{ Carbon\Carbon::parse($comment->created_at)->diffForHumans() }}
+                                          </span>
                                         </span>
                                         {{ $comment->text }}
+                                    </div>
+                                    <div class="comment-tool mt-2" style="margin-left: 40px;">
+                                        <div class="btn-group btn-group-sm float-left mr-2 ">
+                                            <button type="button" class="btn btn-outline-success btn-sm"><i class="far fa-heart"></i> Нравится</button>
+                                            <button type="button" class="btn btn-outline-success btn-sm">0</button>
+                                        </div>
+                                        <button type="button" class="btn btn-outline-info btn-sm"><i class="fas fa-share"></i> Ответить</button>
+                                        <div class="comment-settings float-right">
+                                            <div class="dropdown dropleft">
+                                                <button class="btn btn-block btn-sm"
+                                                        type="button"
+                                                        id="comment-{{ $question->id }}-menu"
+                                                        data-toggle="dropdown"
+                                                        title="Управление комментарием"
+                                                >
+                                                    <i class="fas fa-ellipsis-h"></i>
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="comment-{{ $comment->id }}-menu">
+                                                    <a class="dropdown-item" href="#">Кому нравится</a>
+                                                    <a class="dropdown-item text-danger" href="#">Пожаловаться</a>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -137,14 +165,7 @@
                                          src="{{ auth()->user()->profile->avatar }}"
                                          alt="{{ auth()->user()->profile->full_name }}">
                                     <div class="img-push">
-                                        <div class="input-group">
-                                            <input type="text" name="text" placeholder="Введите сообщение..."
-                                                   class="form-control form-control-sm" required>
-                                            <span class="input-group-append">
-                                                <button type="submit"
-                                                        class="btn btn-primary btn-sm">Опубликовать</button>
-                                            </span>
-                                        </div>
+                                        <comment-form type="question" :id="{{ $question->id }}"></comment-form>
                                     </div>
                                 </form>
                             </div>
@@ -161,14 +182,7 @@
                                          src="{{ auth()->user()->profile->avatar }}"
                                          alt="{{ auth()->user()->profile->full_name }}">
                                     <div class="img-push">
-                                        <div class="input-group">
-                                            <input type="text" name="text" placeholder="Введите сообщение..."
-                                                   class="form-control form-control-sm" required>
-                                            <span class="input-group-append">
-                                                <button type="submit"
-                                                        class="btn btn-primary btn-sm">Опубликовать</button>
-                                            </span>
-                                        </div>
+                                        <comment-form type="question" :id="{{ $question->id }}"></comment-form>
                                     </div>
                                 </form>
                             </div>
@@ -183,142 +197,15 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-12 answers-box">
                     @foreach( $question->answers->sortByDesc('is_solution') as $answer )
-                        <div class="card {{ $answer->is_solution ? 'card-outline card-success' : '' }}">
-                            <div class="card-body">
-                                <div class="tab-content">
-                                    <div class="post p-2">
-                                        <div class="user-block">
-                                            <a href="{{ $answer->user->profile->link }}">
-                                                <img class="img-circle img-bordered-sm"
-                                                     src="{{ $answer->user->profile->avatar }}"
-                                                     alt="{{ $answer->user->profile->full_name }}">
-                                            </a>
-                                            <span class="username">
-                                                <a href="{{ $answer->user->profile->link }}">{{ $answer->user->profile->full_name }}</a>
-                                                @if($answer->is_solution)
-                                                    <div class="ribbon-wrapper">
-                                                        <i class="fas fa-check text-success float-right mt-3 mr-3"
-                                                           data-toggle="tooltip" title="Отмечено решением"></i>
-                                                    </div>
-                                                @endif
-                                            </span>
-                                            <span class="description">
-                                                {{ Carbon\Carbon::parse($question->created_at)->diffForHumans() }}
-                                            </span>
-                                        </div>
-                                        <div class="answer-body">
-                                            {{ $answer->body }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card-footer">
-                                @auth()
-                                    <like-button :answer_id="{{ $answer->id }}"
-                                                 :is_liked="{{ ($answer->is_liked) ? 'true' : 'false' }}"
-                                                 :likes_count="{{ $answer->likeCount }}"></like-button>
-                                @endauth
-
-                                @if($answer->comments->count() > 0)
-                                    <button type="button" class="btn btn-link float-left ml-2"
-                                            data-toggle="collapse" data-target="#answer-comments-{{ $answer->id }}"
-                                            aria-expanded="false" aria-controls="answer-comments-{{ $answer->id }}">
-                                        Комментариев ({{ $answer->comments->count() }})
-                                    </button>
-                                @else
-                                    @auth()
-                                        <button type="button" class="btn btn-default float-left ml-2"
-                                                data-toggle="collapse" data-target="#answer-comments-{{ $answer->id }}"
-                                                aria-expanded="false" aria-controls="answer-comments-{{ $answer->id }}">
-                                            <i class="far fa-comments"></i>
-                                        </button>
-                                    @endauth
-                                @endif
-                                @auth()
-                                    <div class="dropdown float-right dropleft">
-                                        <button class="btn btn-default btn-block" type="button" id="answer-menu"
-                                                data-toggle="dropdown">
-                                            <i class="fas fa-ellipsis-h"></i>
-                                        </button>
-                                        <div class="dropdown-menu" aria-labelledby="answer-menu">
-                                            <a class="dropdown-item" href="#">Кому понравилось</a>
-                                            <a class="dropdown-item text-danger" href="#">Пожаловаться</a>
-                                        </div>
-                                    </div>
-                                @endauth
-                            </div>
-                            @if($answer->comments->count() > 0)
-                                <div class="comments-box collapse" id="answer-comments-{{ $answer->id }}">
-                                    @foreach($answer->comments as $comment)
-                                        <div class="card-footer card-comments">
-                                            <div class="card-comment">
-                                                <a href="{{ $comment->author->profile->link }}">
-                                                    <img class="img-circle img-sm"
-                                                         src="{{ $comment->author->profile->avatar }}"
-                                                         alt="{{ $comment->author->profile->full_name }}">
-                                                </a>
-                                                <div class="comment-text">
-                                        <span class="username">
-                                            <a href="{{ $comment->author->profile->link }}">{{ $comment->author->profile->full_name }}</a>
-                                          <span
-                                              class="text-muted float-right">{{ Carbon\Carbon::parse($comment->created_at)->diffForHumans() }}</span>
-                                        </span>
-                                                    {{ $comment->text }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                    @auth()
-                                        <div class="card-footer">
-                                            <form action="#" method="post" onsubmit="return false;">
-                                                <img class="img-fluid img-circle img-sm"
-                                                     src="{{ auth()->user()->profile->avatar }}" alt="Alt Text">
-                                                <div class="img-push">
-                                                    <div class="input-group">
-                                                        <input type="text" name="message"
-                                                               placeholder="Введите сообщение..."
-                                                               class="form-control form-control-sm">
-                                                        <span class="input-group-append">
-                                              <button type="submit" class="btn btn-primary btn-sm">Опубликовать</button>
-                                            </span>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    @endauth
-                                </div>
-                            @else
-                                @auth()
-                                    <div class="comments-box collapse" id="answer-comments-{{ $answer->id }}">
-                                        <div class="card-footer">
-                                            <form action="#" method="post" onsubmit="return false;">
-                                                <img class="img-fluid img-circle img-sm"
-                                                     src="{{ auth()->user()->profile->avatar }}" alt="Alt Text">
-                                                <div class="img-push">
-                                                    <div class="input-group">
-                                                        <input type="text" name="message"
-                                                               placeholder="Введите сообщение..."
-                                                               class="form-control form-control-sm">
-                                                        <span class="input-group-append">
-                                                  <button type="submit"
-                                                          class="btn btn-primary btn-sm">Опубликовать</button>
-                                                </span>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                @endauth
-                            @endif
-                        </div>
+                        <x-answer :answer="$answer"></x-answer>
                     @endforeach
+                    <div class="answer-item new-answer" style="display: none;"></div>
                 </div>
             </div>
             @auth()
-                @include('layouts.sections.answer-form')
+                <answer-form :question_id="{{ $question->id }}" :answer_is_written="{{ ($question->answer_is_written) ? 'true' : 'false' }}"></answer-form>
             @endauth
         </div>
         @auth()

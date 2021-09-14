@@ -6,11 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="icon" href="{{ asset('img/AdminLTELogo.png') }}" type="image/x-icon">
     <title>@yield('title') — {{ env('APP_NAME') }}</title>
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback"
+          rel="stylesheet">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('public/css/editor-light.css') }}" rel="stylesheet">
     @auth()
         <script>
-        window._token = '{{ csrf_token() }}';
+            window._token = '{{ csrf_token() }}';
         </script>
     @endauth
 

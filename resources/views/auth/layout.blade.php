@@ -10,9 +10,9 @@
     <link href="{{ mix('css/app.min.css') }}" rel="stylesheet">
 </head>
 <body class="hold-transition @yield('class')">
-
-@yield('content')
-
+<div id="app">
+    @yield('content')
+</div>
 <script src="{{ mix('js/app.min.js') }}"></script>
 </body>
 </html>

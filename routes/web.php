@@ -21,10 +21,16 @@ Route::post('/register', [RegisteredUserController::class, 'store'])
     ->name('register.store');
 
 Route::get('/', [App\Http\Controllers\QuestionController::class, 'all'])->name('feed');
-Route::get('/q/{id}', [App\Http\Controllers\QuestionController::class, 'show'])->where('id', '[0-9]+')->name('question.show');
-Route::get('/q/{id}/subscribe', [App\Http\Controllers\QuestionController::class, 'subscribe'])->middleware(['auth'])->name('question.subscribe');
-Route::get('/q/{id}/unsubscribe', [App\Http\Controllers\QuestionController::class, 'unsubscribe'])->middleware(['auth'])->name('question.unsubscribe');
-Route::get('/q/{id}/subscribers', [App\Http\Controllers\QuestionController::class, 'subscribers'])->name('question.subscribers');
+
+Route::prefix('/q/{id}')
+    ->group(function () {
+        Route::get('', [App\Http\Controllers\QuestionController::class, 'show'])->where('id', '[0-9]+')->name('question.show');
+        Route::get('/subscribe', [App\Http\Controllers\QuestionController::class, 'subscribe'])->middleware(['auth'])->name('question.subscribe');
+        Route::get('/unsubscribe', [App\Http\Controllers\QuestionController::class, 'unsubscribe'])->middleware(['auth'])->name('question.unsubscribe');
+        Route::get('/subscribers', [App\Http\Controllers\QuestionController::class, 'subscribers'])->name('question.subscribers');
+
+    });
+
 Route::get('/question/new', [App\Http\Controllers\QuestionController::class, 'new'])->middleware(['auth'])->name('question.new');
 Route::post('/question/new', [App\Http\Controllers\QuestionController::class, 'store'])->middleware(['auth'])->name('question.store');
 Route::get('/dark-mode={mode}', [App\Http\Controllers\Controller::class, 'darkMode'])->name('dark-mode');
@@ -70,6 +76,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::prefix('question/{question}')->group(function () {
         Route::post('/subscribe', [App\Http\Controllers\Api\ApiController::class, 'subscribeToQuestion'])->name('api.question.subscribe');
         Route::post('/unsubscribe', [App\Http\Controllers\Api\ApiController::class, 'unsubscribeFromQuestion'])->name('api.question.unsubscribe');
+        Route::post('/new-answer', [App\Http\Controllers\AnswerController::class, 'store'])->middleware(['auth'])->name('question.answer.store');
+
     });
 
     Route::prefix('answer/{answer}')->group(function () {

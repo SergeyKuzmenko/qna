@@ -134,7 +134,7 @@
                                 <div class="tab-pane" id="answers">
                                     @if($answers->count())
                                         @foreach( $answers->sortByDesc('created_at') as $answer )
-                                            <x-answer :answer="$answer"></x-answer>
+                                            <x-answer-list :answer="$answer"></x-answer-list>
                                         @endforeach
                                         <div class="row">
                                             <div class="col-md-12">

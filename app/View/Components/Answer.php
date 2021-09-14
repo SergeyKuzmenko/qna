@@ -4,10 +4,9 @@ namespace App\View\Components;
 
 use Illuminate\View\Component;
 
-class AnswerList extends Component
+class Answer extends Component
 {
     public $answer;
-
     /**
      * Create a new component instance.
      *
@@ -25,6 +24,6 @@ class AnswerList extends Component
      */
     public function render()
     {
-        return view('components.answer-list');
+        return view('components.answer');
     }
 }

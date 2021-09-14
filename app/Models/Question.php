@@ -20,6 +20,8 @@ class Question extends Model
      */
     protected $fillable = ['title', 'body', 'user_id', 'complexity'];
 
+    public $timestamps = true;
+
     /**
      * @var array[]
      */
@@ -80,6 +82,11 @@ class Question extends Model
     public function subscribers()
     {
         return $this->belongsToMany(User::class, 'question_subscriber');
+    }
+
+    public function getAnswerIsWrittenAttribute()
+    {
+        return ($this->answers()->where('user_id', auth()->user()->id)->count()) ? true : false;
     }
 
     /**

@@ -20,7 +20,7 @@
                     <x-filter-menu></x-filter-menu>
                 </div>
             </div>
-            @if(count($questions) > 0)
+            @if($questions->count())
                 @foreach($questions->sortByDesc('created_at') as $question)
                     <x-question :question="$question"></x-question>
                 @endforeach

@@ -14,9 +14,12 @@ class Answer extends Model
     /**
      * @var string[]
      */
-    protected $fillable = ['body'];
+    protected $fillable = ['body', 'user_id', 'question_id'];
 
     protected $with = ['comments'];
+
+    public $timestamps = true;
+
 
     /**
      * @return BelongsTo

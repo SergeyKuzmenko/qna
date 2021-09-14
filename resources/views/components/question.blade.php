@@ -15,48 +15,52 @@
                 @endswitch
             </div>
             @if(count($question->tags) == 1)
-                @foreach($question->tags as $tag)
-                    <a href="{{ route('tag.info', ['slug' => $tag->slug]) }}"
-                       class="float-left btn btn-sm white">
-                        <img class="img-rounded img-size-32"
-                             src="{{ asset($tag->icon) }}" alt="{{ $tag->title }}}">
-                        {{ $tag->title }}
-                    </a>
-                @endforeach
-            @else
-                <ul class="tags-list">
-                @foreach($question->tags as $tag)
-                    <li class="tags__list__item">
-                        <a href="{{ route('tag.info', ['slug' => $tag->slug]) }}"
-                           class="float-left pl-1">
-                            <img class="img-rounded tag_list_item_icon"
-                                 src="{{ asset($tag->icon) }}" alt="{{ $tag->title }}}">
-                            {{ $tag->title }}
-                        </a>
-                    </li>
-                    @if ($loop->first)
-                        <li class="tags__list__item gray">
-                            +{{ $loop->count - 1 }} ещё
+                <ul class="tags-list ml-1">
+                    @foreach($question->tags as $tag)
+                        <li class="tags__list__item">
+                            <a href="{{ route('tag.info', ['slug' => $tag->slug]) }}"
+                               class="float-left pl-1">
+                                <img class="img-rounded tag_list_item_icon"
+                                     src="{{ asset($tag->icon) }}" alt="{{ $tag->title }}}">
+                                {{ $tag->title }}
+                            </a>
                         </li>
-                        @break
-                    @endif
-                @endforeach
+                    @endforeach
+                </ul>
+            @else
+                <ul class="tags-list ml-1">
+                    @foreach($question->tags as $tag)
+                        <li class="tags__list__item">
+                            <a href="{{ route('tag.info', ['slug' => $tag->slug]) }}"
+                               class="float-left pl-1">
+                                <img class="img-rounded tag_list_item_icon"
+                                     src="{{ asset($tag->icon) }}" alt="{{ $tag->title }}}">
+                                {{ $tag->title }}
+                            </a>
+                        </li>
+                        @if ($loop->first)
+                            <li class="tags__list__item gray" title="{{ $question->tags->pluck('title')->slice(1)->join(', ') }}">
+                                +{{ $loop->count - 1 }} ещё
+                            </li>
+                            @break
+                        @endif
+                    @endforeach
                 </ul>
             @endif
-            <div class="user-block">
+            <div class="user-block mt-2">
                 <a href="{{ $question->user->profile->link }}">
                     <img class="img-circle img-bordered-sm"
                          src="{{ $question->user->profile->avatar }}"
-                         alt="{{ $question->user->profile->full_name }}"
-                    >
+                         alt="{{ $question->user->profile->full_name }}">
                 </a>
                 <a href="{{route('question.show', ['id' => $question->id]) }}" class="question-link">
                     <span class="username">
                        {{ $question->title }}
                     </span>
                 </a>
-                <span class="description">
-                    <span class="created_at" data-toggle="tooltip"
+                <span class="description mt-0">
+                    <span class="created_at"
+                          data-toggle="tooltip"
                           title="{{ Carbon\Carbon::parse($question->created_at)->isoformat("D MMMM Y в H:m") }}">
                         <i class="far fa-clock"></i>
                         {{ Carbon\Carbon::parse($question->created_at)->diffForHumans() }}
@@ -70,11 +74,11 @@
                 </span>
             </div>
 
-            <span class="float-right mt-2">
+            <span class="float-right">
                 @if($question->solutions->count())
-                    <span class="mr-1">
-                    <i class="fas fa-check text-success" data-toggle="tooltip" title="Есть решение"></i>
-                </span>
+                    <span >
+                        <i class="fas fa-check text-success" data-toggle="tooltip" title="Есть решение"></i>
+                    </span>
                 @endif
                 <a href="{{route('question.show', ['id' => $question->id]) }}"
                    class="question-link {{ $question->solutions->count() ? 'text-success' : '' }}">

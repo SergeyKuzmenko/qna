@@ -46,7 +46,7 @@ class QuestionController extends Controller
     public function show(Question $id)
     {
         $id->increment('views');
-        //dd($id->toArray());
+        //dd($id->answer_is_written);
         return view('question', ['question' => $id]);
     }
 

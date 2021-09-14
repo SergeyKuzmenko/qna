@@ -1,4 +1,4 @@
-<div class="card answer-item {{ $answer->is_solution ? 'card-outline card-success' : '' }}">
+<div class="card answer-list {{ $answer->is_solution ? 'card-outline card-success' : '' }}">
     <div class="card-body">
         <div class="tab-content">
             <div class="post p-2">
@@ -24,7 +24,7 @@
                     </span>
                 </div>
                 <div class="answer-body">
-                    {{ $answer->body }}
+                    {!! $answer->body !!}
                 </div>
             </div>
             <span class="float-right">

@@ -16,10 +16,10 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-12 answers-box">
                     @if($answers->count() > 0)
                         @foreach( $answers->sortByDesc('created_at') as $answer )
-                            <x-answer :answer="$answer"></x-answer>
+                            <x-answer-list :answer="$answer"></x-answer-list>
                         @endforeach
                     @else
                         <div class="col-md-12">

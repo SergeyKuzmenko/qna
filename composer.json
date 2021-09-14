@@ -12,6 +12,7 @@
         "laravel/framework": "^8.40",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.3",
+        "mews/purifier": "^3.3",
         "rtconner/laravel-likeable": "^3.2"
     },
     "require-dev": {
