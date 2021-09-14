@@ -25,6 +25,6 @@ class Answer extends Component
      */
     public function render()
     {
-        return view('components.answer');
+        return view('components.answer-list');
     }
 }
