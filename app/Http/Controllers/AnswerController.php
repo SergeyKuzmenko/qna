@@ -3,11 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Question;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 
 class AnswerController extends Controller
 {
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function store(Request $request)
     {
         $question_id = $request->input('question_id');
@@ -32,11 +37,17 @@ class AnswerController extends Controller
         }
     }
 
+    /**
+     * @todo
+     */
     public function edit()
     {
 
     }
 
+    /**
+     * @todo
+     */
     public function destroy()
     {
 

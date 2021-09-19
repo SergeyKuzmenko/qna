@@ -4,10 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\NewQuestionRequest;
 use App\Models\Question;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 
 class QuestionController extends Controller
 {
+    /**
+     * @param Request $request
+     * @param Question $question
+     * @return View
+     */
     public function all(Request $request, Question $question)
     {
         switch ($request->get('by')) {
@@ -32,11 +43,19 @@ class QuestionController extends Controller
         return view('feed', ['questions' => $questions->appends(request()->query()), 'title' => $title]);
     }
 
+    /**
+     * @return View
+     */
     public function new()
     {
         return view('new');
     }
 
+    /**
+     * @param NewQuestionRequest $request
+     * @param Question $question
+     * @return RedirectResponse
+     */
     public function store(NewQuestionRequest $request, Question $question)
     {
         $question->newQuestion($request);
@@ -44,13 +63,20 @@ class QuestionController extends Controller
     }
 
 
+    /**
+     * @param Question $id
+     * @return View
+     */
     public function show(Question $id)
     {
         $id->increment('views');
-        //dd($id->toArray());
         return view('question', ['question' => $id]);
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function subscribe(Request $request)
     {
         $question_id = $request->input('question_id');
@@ -68,6 +94,10 @@ class QuestionController extends Controller
         }
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function unsubscribe(Request $request)
     {
         $question_id = $request->input('question_id');

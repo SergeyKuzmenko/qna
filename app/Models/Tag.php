@@ -8,13 +8,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * Class Tag
+ * @package App\Models
+ */
 class Tag extends Model
 {
 
     use HasFactory;
 
     /**
-     * @var string[]
+     * @var array[]
      */
     protected $fillable = ['title', 'slug', 'description', 'icon'];
 
@@ -145,7 +149,7 @@ class Tag extends Model
     }
 
     /**
-     * @return false
+     * @return false|int
      */
     public function subscribe()
     {
@@ -157,7 +161,7 @@ class Tag extends Model
     }
 
     /**
-     * @return false
+     * @return false|int
      */
     public function unsubscribe()
     {

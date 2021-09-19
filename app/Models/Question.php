@@ -20,6 +20,9 @@ class Question extends Model
      */
     protected $fillable = ['title', 'body', 'user_id', 'complexity'];
 
+    /**
+     * @var bool
+     */
     public $timestamps = true;
 
     /**
@@ -53,7 +56,7 @@ class Question extends Model
      */
     public function answers()
     {
-        return $this->hasMany(Answer::class)->when(auth()->user(), function ($query){
+        return $this->hasMany(Answer::class)->when(auth()->user(), function ($query) {
             $query->withExists(['likes as is_liked' => function ($query) {
                 $query->where('user_id', auth()->user()->id);
             }]);
@@ -73,7 +76,7 @@ class Question extends Model
      */
     public function comments()
     {
-        return $this->morphMany(Comment::class, 'commentable')->when(auth()->user(), function ($query){
+        return $this->morphMany(Comment::class, 'commentable')->when(auth()->user(), function ($query) {
             $query->withExists(['likes as is_liked' => function ($query) {
                 $query->where('user_id', auth()->user()->id);
             }]);
@@ -88,6 +91,9 @@ class Question extends Model
         return $this->belongsToMany(User::class, 'question_subscriber');
     }
 
+    /**
+     * @return bool
+     */
     public function getAnswerIsWrittenAttribute()
     {
         return ($this->answers()->where('user_id', auth()->user()->id)->count()) ? true : false;

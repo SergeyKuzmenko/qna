@@ -5,14 +5,29 @@ namespace App\Http\Controllers;
 use App\Models\Answer;
 use App\Models\Comment;
 use App\Models\Profile;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ReactionController extends Controller
 {
+    /**
+     * @var string
+     */
     private $type;
+    /**
+     * @var int
+     */
     private $id;
+    /**
+     * @var Model
+     */
     private $target;
 
+    /**
+     * ReactionController constructor.
+     * @param Request $request
+     */
     function __construct(Request $request)
     {
         $this->type = $request->input('type');
@@ -32,6 +47,9 @@ class ReactionController extends Controller
         return $this->target;
     }
 
+    /**
+     * @return JsonResponse
+     */
     public function like()
     {
         if ($this->target) {
@@ -49,6 +67,9 @@ class ReactionController extends Controller
         }
     }
 
+    /**
+     * @return JsonResponse
+     */
     public function unlike()
     {
         if ($this->target) {
@@ -66,6 +87,9 @@ class ReactionController extends Controller
         }
     }
 
+    /**
+     * @return JsonResponse
+     */
     public function likes()
     {
         if ($this->target) {

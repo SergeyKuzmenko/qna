@@ -5,11 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\Answer;
 use App\Models\Comment;
 use App\Models\Question;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     * @throws ModelNotFoundException
+     */
     public function store(Request $request)
     {
         $target = $request->input('type');
@@ -42,11 +49,17 @@ class CommentController extends Controller
 
     }
 
+    /**
+     * @todo
+     */
     public function edit()
     {
 
     }
 
+    /**
+     * @todo
+     */
     public function destroy()
     {
 
