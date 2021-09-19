@@ -3,16 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Question;
-use App\Models\Answer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 
 class AnswerController extends Controller
 {
-    public function store(Question $question, Request $request)
+    public function store(Request $request)
     {
-        $answer = $question->answers()->create([
-            'body' => clean($request->input('body')),
+        $question_id = $request->input('question_id');
+        $answer_text = $request->input('answer_text');
+
+        $answer = Question::find($question_id)->answers()->create([
+            'body' => clean($answer_text),
             'user_id' => auth()->user()->id,
         ]);
 
@@ -28,5 +30,15 @@ class AnswerController extends Controller
                 'error' => 'Bad request. Undefined target question'
             ], 400);
         }
+    }
+
+    public function edit()
+    {
+
+    }
+
+    public function destroy()
+    {
+
     }
 }

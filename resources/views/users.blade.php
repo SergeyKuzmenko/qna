@@ -19,21 +19,21 @@
             @if(request()->routeIs('users.all'))
                 <div class="col-md-12">
                     <div class="row mb-3 filter-menu">
-                        <div class="col-3">
+                        <div class="col-md-3 col-sm-12 mt-2">
                             <a href="{{ route('users.all') }}" type="button"
                                class="btn btn-block btn-outline-secondary btn-sm {{ (request()->input('by') == '' || request()->input('by') == null) ? 'active' : '' }}">Новые</a>
                         </div>
-                        <div class="col-3">
+                        <div class="col-md-3 col-sm-12 mt-2">
                             <a href="{{ request()->fullUrlWithQuery(['by' => 'questions']) }} " type="button"
                                class="btn btn-block btn-outline-secondary btn-sm {{ (request()->input('by') == 'questions') ? 'active' : '' }}">По
                                 вопросам</a>
                         </div>
-                        <div class="col-3">
+                        <div class="col-md-3 col-sm-12 mt-2">
                             <a href="{{ request()->fullUrlWithQuery(['by' => 'answers']) }} " type="button"
                                class="btn btn-block btn-outline-secondary btn-sm {{ (request()->input('by') == 'answers') ? 'active' : '' }}">По
                                 ответам</a>
                         </div>
-                        <div class="col-3">
+                        <div class="col-md-3 col-sm-12 mt-2">
                             <a href="{{ request()->fullUrlWithQuery(['by' => 'rating']) }} " type="button"
                                class="btn btn-block btn-outline-secondary btn-sm {{ (request()->input('by') == 'rating') ? 'active' : '' }}">По
                                 рейтингу</a>
@@ -42,7 +42,7 @@
                 </div>
             @endif
             <div class="row">
-                @if(count($users) > 0)
+                @if($users->count())
                     @foreach( $users as $user)
                         <div class="col-lg-3 col-md-4 col-sm-4 col-sm-6">
                             <div class="text-center card-box {{ (session('dark_mode')) ? 'dark-mode border' : '' }}">

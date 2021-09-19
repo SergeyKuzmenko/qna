@@ -16,18 +16,16 @@
 @section('content')
     <section class="content">
         <div class="container-fluid">
-            <div class="col-md-12">
-                <div class="row mb-3 filter-menu">
-                    <div class="col-3">
-                        <a href="{{ request()->fullUrlWithQuery(['by' => 'followers']) }} " type="button"
-                           class="btn btn-block btn-outline-secondary btn-sm {{ (request()->input('by') == 'followers' || request()->input('by') == null) ? 'active' : '' }}">По
-                            подписчикам</a>
-                    </div>
-                    <div class="col-3">
-                        <a href="{{ request()->fullUrlWithQuery(['by' => 'questions']) }} " type="button"
-                           class="btn btn-block btn-outline-secondary btn-sm {{ (request()->input('by') == 'questions') ? 'active' : '' }}">По
-                            вопросам</a>
-                    </div>
+            <div class="row mb-3 filter-menu">
+                <div class="col-md-6 col-sm-12 mt-2">
+                    <a href="{{ request()->fullUrlWithQuery(['by' => 'followers']) }} " type="button"
+                       class="btn btn-block btn-outline-secondary btn-sm {{ (request()->input('by') == 'followers' || request()->input('by') == null) ? 'active' : '' }}">По
+                        подписчикам</a>
+                </div>
+                <div class="col-md-6 col-sm-12 mt-2">
+                    <a href="{{ request()->fullUrlWithQuery(['by' => 'questions']) }} " type="button"
+                       class="btn btn-block btn-outline-secondary btn-sm {{ (request()->input('by') == 'questions') ? 'active' : '' }}">По
+                        вопросам</a>
                 </div>
             </div>
             <div class="row">

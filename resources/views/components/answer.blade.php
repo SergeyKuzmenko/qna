@@ -19,7 +19,7 @@
                             @endif
                         </span>
                         <span class="description"
-                            title="Дата публикации: {{ Carbon\Carbon::parse($answer->created_at)->isoformat("D MMMM Y в H:m") }}"
+                              title="Дата публикации: {{ Carbon\Carbon::parse($answer->created_at)->isoformat("D MMMM Y в H:m") }}"
                         >
                             {{ Carbon\Carbon::parse($answer->created_at)->diffForHumans() }}
                         </span>
@@ -32,17 +32,17 @@
         </div>
 
         <div class="card-footer">
-            @auth()
-                <like-button :answer_id="{{ $answer->id }}"
-                             :is_liked="{{ ($answer->is_liked) ? 'true' : 'false' }}"
-                             :likes_count="{{ $answer->likeCount }}"></like-button>
-            @endauth
-
-            @if($answer->comments->count() > 0)
-                <button type="button" class="btn btn-link float-left ml-2"
+            <like-button
+                target_type="answer"
+                target_id="{{ $answer->id }}"
+                :is_liked="{{ ($answer->is_liked) ? 'true' : 'false' }}"
+                :likes_count="{{ $answer->likeCount }}">
+            </like-button>
+            @if($answer->comments->count())
+                <button type="button" class="btn btn-default float-left ml-2"
                         data-toggle="collapse" data-target="#answer-comments-{{ $answer->id }}"
                         aria-expanded="false" aria-controls="answer-comments-{{ $answer->id }}">
-                    Комментариев ({{ $answer->comments->count() }})
+                    <i class="far fa-comments"></i> {{ $answer->comments->count() }}
                 </button>
             @else
                 @auth()
@@ -53,64 +53,57 @@
                     </button>
                 @endauth
             @endif
-            @auth()
-                <div class="dropdown float-right dropleft">
-                    <button class="btn btn-default btn-block"
-                            type="button"
-                            id="answer-{{ $answer->id }}-menu"
-                            data-toggle="dropdown"
-                            title="Управление ответом"
-                    >
-                        <i class="fas fa-ellipsis-h"></i>
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="answer-{{ $answer->id }}-menu">
-                        <a class="dropdown-item" href="#who-liked-{{ $answer->id }}">Кому понравилось</a>
-                        <a class="dropdown-item text-danger" href="#abuse-answer-{{ $answer->id }}">Пожаловаться</a>
-                    </div>
+            <div class="dropdown float-right dropleft">
+                <button class="btn btn-default btn-block"
+                        type="button"
+                        id="answer-{{ $answer->id }}-menu"
+                        data-toggle="dropdown"
+                        title="Управление ответом"
+                >
+                    <i class="fas fa-ellipsis-h"></i>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="answer-{{ $answer->id }}-menu">
+                    @auth()
+                        @if(auth()->user()->id === $answer->user_id)
+                            <a class="dropdown-item" href="#edit-{{ $answer->id }}">Редактировать</a>
+                            <a class="dropdown-item text-danger" href="#delete-answer-{{ $answer->id }}">Удалить</a>
+                            <div class="dropdown-divider"></div>
+                        @endif
+                    @endauth
+                    <a class="dropdown-item" href="#who-liked-{{ $answer->id }}">Кому понравилось</a>
+                    <a class="dropdown-item text-danger" href="#abuse-answer-{{ $answer->id }}">Пожаловаться</a>
                 </div>
-            @endauth
+            </div>
         </div>
         @if($answer->comments->count())
             <div class="comments-box collapse" id="answer-comments-{{ $answer->id }}">
                 @foreach($answer->comments as $comment)
-                    <div class="card-footer card-comments">
-                        <div class="card-comment">
-                            <a href="{{ $comment->author->profile->link }}">
-                                <img class="img-circle img-sm"
-                                     src="{{ $comment->author->profile->avatar }}"
-                                     alt="{{ $comment->author->profile->full_name }}">
-                            </a>
-                            <div class="comment-text">
-                                        <span class="username">
-                                            <a href="{{ $comment->author->profile->link }}">{{ $comment->author->profile->full_name }}</a>
-                                          <span
-                                              class="text-muted float-right">
-                                              {{ Carbon\Carbon::parse($comment->created_at)->diffForHumans() }}
-                                          </span>
-                                        </span>
-                                {{ $comment->text }}
-                            </div>
-                        </div>
-                    </div>
+                    <x-comment :comment="$comment"></x-comment>
                 @endforeach
-                @auth()
-                        <comment-form type="answer" id="{{ $answer->id }}"></comment-form>
-                @endauth
+                <div class="card-footer">
+                    @auth()
+                        <img class="img-fluid img-circle img-sm"
+                             src="{{ auth()->user()->profile->avatar }}"
+                             alt="{{ auth()->user()->profile->full_name }}">
+                        <div class="img-push">
+                            <comment-form type="answer" :id="{{ $answer->id }}"></comment-form>
+                        </div>
+                    @endauth
+                </div>
             </div>
         @else
-            @auth()
-                <div class="comments-box collapse" id="answer-comments-{{ $answer->id }}">
-                    <div class="card-footer">
-                        <form action="#" method="post" onsubmit="return false;">
-                            <img class="img-fluid img-circle img-sm"
-                                 src="{{ auth()->user()->profile->avatar }}" alt="{{ auth()->user()->profile->full_name }}">
-                            <div class="img-push">
-                                <comment-form type="answer" id="{{ $answer->id }}"></comment-form>
-                            </div>
-                        </form>
-                    </div>
+            <div class="comments-box collapse" id="answer-comments-{{ $answer->id }}">
+                <div class="card-footer">
+                    @auth()
+                        <img class="img-fluid img-circle img-sm"
+                             src="{{ auth()->user()->profile->avatar }}"
+                             alt="{{ auth()->user()->profile->full_name }}">
+                        <div class="img-push">
+                            <comment-form type="answer" :id="{{ $answer->id }}"></comment-form>
+                        </div>
+                    @endauth
                 </div>
-            @endauth
+            </div>
         @endif
     </div>
 </div>

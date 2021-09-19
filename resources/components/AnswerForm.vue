@@ -2,7 +2,7 @@
     <div class="answer-form">
         <div class="row">
             <div class="col-md-12">
-                <div class="card" v-if="!answer_is_written">
+                <div class="card" v-if="!answerIsWritten">
                     <form action="#" method="post">
                         <div class="card-header">
                             <h3 class="card-title">Ваш ответ на вопрос</h3>
@@ -31,7 +31,7 @@
                         </div>
                     </form>
                 </div>
-                <div class="card" v-if="answer_is_written">
+                <div class="card" v-if="answerIsWritten">
                     <div class="card-body">
                         <h3 class="lead mt-2">
                             Вы уже ответили на вопрос
@@ -70,24 +70,28 @@ export default {
                 ["image", "link", "code-block"]
             ],
             editorOptions: {
-                modules: {}
+                modules: {
+                    syntax: true
+                }
             }
         }
     },
     methods: {
         sendAnswer: function () {
-            this.$http.post(`/question/${this.questionId}/new-answer`, {
+            this.$http.post('/answer/new', {
                 question_id: this.question_id,
-                body: this.content
+                answer_text: this.content
             })
                 .then(((response) => {
                     if (response.data.success) {
-                        //this.$root.$data.newAnswers= response.data.answer_html
                         $('.new-answer').append(response.data.answer_html).show('slow');
                         this.content = ''
-                        this.answer_is_written = true
+                        this.answerIsWritten = true
                     }
                 }))
+                .catch((response) => {
+                    // todo
+                })
         },
         resetEditor: function () {
             this.content = ''
@@ -97,5 +101,18 @@ export default {
 </script>
 
 <style scoped>
+.list-item {
+    display: inline-block;
+    margin-right: 10px;
+}
 
+.list-enter-active, .list-leave-active {
+    transition: all 1s;
+}
+
+.list-enter, .list-leave-to /* .list-leave-active до версии 2.1.8 */
+{
+    opacity: 0;
+    transform: translateY(30px);
+}
 </style>

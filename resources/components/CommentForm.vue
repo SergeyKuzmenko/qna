@@ -13,14 +13,14 @@
                             </div>
                         </div>
                         <div class="card-footer">
-                            <div class="float-right">
-                                <button type="button" class="btn btn-primary">
-                                    Отправить
-                                </button>
-                            </div>
                             <button type="reset" class="btn btn-default" @click="resetEditor">
                                 <i class="fas fa-times"></i> Очистить
                             </button>
+                            <div class="float-right">
+                                <button type="button" @click="send" class="btn btn-primary">
+                                    Отправить
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -44,6 +44,8 @@ export default {
     data() {
         return {
             content: '',
+            commentId: this.$props.id,
+            commentType: this.$props.type,
             toolbar: [
                 ["bold", "italic", "underline", "strike"],
                 ["blockquote", "code"],
@@ -53,6 +55,19 @@ export default {
         }
     },
     methods: {
+        send: function () {
+            this.$http.post('/comment/store', {
+                type: this.commentType,
+                id: this.commentId,
+                text: this.content
+            })
+                .then(((response) => {
+                    if (response.status === 200) {
+                        console.log(response.data)
+                        this.content = ''
+                    }
+                }))
+        },
         resetEditor: function () {
             this.content = ''
         }

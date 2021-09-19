@@ -73,7 +73,11 @@ class Question extends Model
      */
     public function comments()
     {
-        return $this->morphMany(Comment::class, 'commentable');
+        return $this->morphMany(Comment::class, 'commentable')->when(auth()->user(), function ($query){
+            $query->withExists(['likes as is_liked' => function ($query) {
+                $query->where('user_id', auth()->user()->id);
+            }]);
+        });
     }
 
     /**
@@ -196,7 +200,10 @@ class Question extends Model
      */
     public function getIsSubscribedAttribute()
     {
-        return $this->subscribers()->whereIn('user_id', [auth()->user()->id])->count() ? true : false;
+        if (auth()->user()) {
+            return $this->subscribers()->whereIn('user_id', [auth()->user()->id])->count() ? true : false;
+        }
+        return false;
     }
 
     /**

@@ -4,7 +4,6 @@ require('admin-lte')
 require('select2')
 require('select2/dist/js/i18n/ru')
 import axios from 'axios'
-import hljs from 'highlight.js';
 import Vue from 'vue';
 import LikeComponent from "../components/LikeComponent";
 import SubscribeQuestionComponent from "../components/SubscribeQuestionComponent";

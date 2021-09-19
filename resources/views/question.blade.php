@@ -65,33 +65,32 @@
                     </div>
                 </div>
                 <div class="card-footer">
+                    <subscribe-question-button
+                        :question_id="{{ $question->id }}"
+                        :is_subscribed="{{ ($question->is_subscribed) ? 'true' : 'false' }}"
+                        :subscribers_count="{{ $question->count_subscribers }}">
+                    </subscribe-question-button>
                     @auth()
-                        <subscribe-question-button
-                            :question_id="{{ $question->id }}"
-                            :is_subscribed="{{ ($question->is_subscribed) ? 'true' : 'false' }}"
-                            :subscribers_count="{{ $question->count_subscribers }}">
-                        </subscribe-question-button>
                         <button type="button" class="btn btn-outline-secondary float-left ml-2" data-toggle="modal"
                                 data-target="#complexity">
                             <i class="fas fa-tachometer-alt"></i>
-                            Сложность
                         </button>
-                        @if($question->comments->count())
+                    @endauth
+                    @if($question->comments->count())
+                        <button type="button" class="btn btn-default ml-2" data-toggle="collapse"
+                                data-target="#question-comments-{{ $question->id }}" aria-expanded="false"
+                                aria-controls="collapseExample">
+                            <i class="far fa-comments mr-1"></i> {{ $question->comments->count() }}
+                        </button>
+                    @else
+                        @auth()
                             <button type="button" class="btn btn-default ml-2" data-toggle="collapse"
                                     data-target="#question-comments-{{ $question->id }}" aria-expanded="false"
                                     aria-controls="collapseExample">
-                                <i class="far fa-comments mr-1"></i> {{ $question->comments->count() }}
+                                <i class="far fa-comments"></i>
                             </button>
-                        @else
-                            @auth()
-                                <button type="button" class="btn btn-default ml-2" data-toggle="collapse"
-                                        data-target="#question-comments-{{ $question->id }}" aria-expanded="false"
-                                        aria-controls="collapseExample">
-                                    <i class="far fa-comments"></i>
-                                </button>
-                            @endauth
-                        @endif
-                    @endauth
+                        @endauth
+                    @endif
                     <div class="question-settings float-right">
                         <div class="dropdown dropleft">
                             <button class="btn btn-default btn-block"
@@ -112,62 +111,16 @@
                 @if($question->comments->count())
                     <div class="comments-box collapse" id="question-comments-{{ $question->id }}">
                         @foreach($question->comments as $comment)
-                            <div class="card-footer card-comments" style="padding-bottom: 0px; padding-top: 0px;">
-                                <div class="card-comment border-top">
-                                    <a href="{{ $comment->author->profile->link }}">
-                                        <img class="img-circle img-sm mt-2" src="{{ $comment->author->profile->avatar }}"
-                                             alt="{{ $comment->author->profile->full_name }}">
-                                    </a>
-                                    <div class="comment-text mt-2">
-                                        <span class="username">
-                                            <a href="{{ $comment->author->profile->link }}">{{ $comment->author->profile->full_name }}</a>
-                                          <span
-                                              class="text-muted float-right"
-                                              title="Написано: {{ Carbon\Carbon::parse($comment->created_at)->isoformat("D MMMM Y в H:m") }}"
-                                          >
-                                              {{ Carbon\Carbon::parse($comment->created_at)->diffForHumans() }}
-                                          </span>
-                                        </span>
-                                        {{ $comment->text }}
-                                    </div>
-                                    <div class="comment-tool mt-2" style="margin-left: 40px;">
-                                        <div class="btn-group btn-group-sm float-left mr-2 ">
-                                            <button type="button" class="btn btn-outline-success btn-sm"><i class="far fa-heart"></i> Нравится</button>
-                                            <button type="button" class="btn btn-outline-success btn-sm">0</button>
-                                        </div>
-                                        <button type="button" class="btn btn-outline-info btn-sm"><i class="fas fa-share"></i> Ответить</button>
-                                        <div class="comment-settings float-right">
-                                            <div class="dropdown dropleft">
-                                                <button class="btn btn-block btn-sm"
-                                                        type="button"
-                                                        id="comment-{{ $question->id }}-menu"
-                                                        data-toggle="dropdown"
-                                                        title="Управление комментарием"
-                                                >
-                                                    <i class="fas fa-ellipsis-h"></i>
-                                                </button>
-                                                <div class="dropdown-menu" aria-labelledby="comment-{{ $comment->id }}-menu">
-                                                    <a class="dropdown-item" href="#">Кому нравится</a>
-                                                    <a class="dropdown-item text-danger" href="#">Пожаловаться</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <x-comment :comment="$comment"></x-comment>
                         @endforeach
                         @auth()
                             <div class="card-footer">
-                                <form action="{{ route('comment.question.store') }}" method="post">
-                                    {{ csrf_field() }}
-                                    <input type="hidden" name="question_id" value="{{ $question->id }}">
-                                    <img class="img-fluid img-circle img-sm"
-                                         src="{{ auth()->user()->profile->avatar }}"
-                                         alt="{{ auth()->user()->profile->full_name }}">
-                                    <div class="img-push">
-                                        <comment-form type="question" :id="{{ $question->id }}"></comment-form>
-                                    </div>
-                                </form>
+                                <img class="img-fluid img-circle img-sm"
+                                     src="{{ auth()->user()->profile->avatar }}"
+                                     alt="{{ auth()->user()->profile->full_name }}">
+                                <div class="img-push">
+                                    <comment-form type="question" :id="{{ $question->id }}"></comment-form>
+                                </div>
                             </div>
                         @endauth
                     </div>
@@ -175,16 +128,12 @@
                     @auth()
                         <div class="comments-box collapse" id="question-comments-{{ $question->id }}">
                             <div class="card-footer">
-                                <form action="{{ route('comment.question.store') }}" method="post">
-                                    {{ csrf_field() }}
-                                    <input type="hidden" name="question_id" value="{{ $question->id }}">
-                                    <img class="img-fluid img-circle img-sm"
-                                         src="{{ auth()->user()->profile->avatar }}"
-                                         alt="{{ auth()->user()->profile->full_name }}">
-                                    <div class="img-push">
-                                        <comment-form type="question" :id="{{ $question->id }}"></comment-form>
-                                    </div>
-                                </form>
+                                <img class="img-fluid img-circle img-sm"
+                                     src="{{ auth()->user()->profile->avatar }}"
+                                     alt="{{ auth()->user()->profile->full_name }}">
+                                <div class="img-push">
+                                    <comment-form type="question" :id="{{ $question->id }}"></comment-form>
+                                </div>
                             </div>
                         </div>
                     @endauth
@@ -205,7 +154,9 @@
                 </div>
             </div>
             @auth()
-                <answer-form :question_id="{{ $question->id }}" :answer_is_written="{{ ($question->answer_is_written) ? 'true' : 'false' }}"></answer-form>
+                <answer-form :question_id="{{ $question->id }}"
+                             :answer_is_written="{{ ($question->answer_is_written) ? 'true' : 'false' }}">
+                </answer-form>
             @endauth
         </div>
         @auth()

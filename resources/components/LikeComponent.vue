@@ -1,10 +1,11 @@
 <template>
     <div class="like-button">
-        <div class="btn-group float-left">
+        <div class="btn-group float-left mr-2">
             <button
                 v-if="liked"
                 type="button"
                 class="btn btn-outline-success active"
+                :class="{'btn-sm': targetType === 'comment'}"
                 :disabled="loading"
                 @click="unlike"
             >
@@ -20,6 +21,7 @@
                 v-if="!liked"
                 type="button"
                 class="btn btn-outline-success"
+                :class="{'btn-sm': targetType === 'comment'}"
                 :disabled="loading"
                 @click="like"
             >
@@ -34,6 +36,8 @@
             <button
                 type="button"
                 class="btn btn-outline-success"
+                :class="{'btn-sm': targetType === 'comment'}"
+                @click="likes"
             >
                 {{ likesCount }}
             </button>
@@ -44,25 +48,30 @@
 <script>
 export default {
     name: "LikeComponent",
-    props: {
-        'answer_id': Number,
-        'is_liked': Boolean,
-        'likes_count': Number
-    },
+    props: [
+        'target_type',
+        'target_id',
+        'is_liked',
+        'likes_count'
+    ],
     data() {
         return {
-            answerId: this.$props.answer_id,
+            targetType: this.$props.target_type,
+            targetId: this.$props.target_id,
             liked: this.$props.is_liked,
+            likesCount: this.$props.likes_count,
             likedText: 'Вам нравится',
             notLikedText: 'Нравится',
-            likesCount: this.$props.likes_count,
             loading: false,
         }
     },
     methods: {
         like: function () {
             this.loading = !this.loading
-            this.$http.post(`/answer/${this.answerId}/like`)
+            this.$http.post('/reaction/like', {
+                type: this.targetType,
+                id: this.targetId
+            })
                 .then((response) => {
                     if (response.status === 200) {
                         this.liked = !this.liked
@@ -72,12 +81,16 @@ export default {
                     }
                 })
                 .catch((e) => {
-                    // todo
+                    alert('Нужно авторизоваться')
+                    this.loading = false
                 })
         },
         unlike: function () {
             this.loading = !this.loading
-            this.$http.post(`/answer/${this.answerId}/unlike`)
+            this.$http.post('/reaction/unlike', {
+                type: this.targetType,
+                id: this.targetId
+            })
                 .then((response) => {
                     if (response.status === 200) {
                         this.liked = !this.liked
@@ -87,7 +100,23 @@ export default {
                     }
                 })
                 .catch((e) => {
-                    // todo
+                    console.log(e)
+                    this.loading = false
+                })
+        },
+        likes: function () {
+            this.$http.post('/reaction/likes', {
+                type: this.targetType,
+                id: this.targetId
+            })
+                .then((response) => {
+                    if (response.status === 200) {
+                        console.log(response.data)
+                    }
+                })
+                .catch((e) => {
+                    alert('Нужно авторизоваться')
+                    this.loading = false
                 })
         }
     }

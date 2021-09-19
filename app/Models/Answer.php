@@ -39,7 +39,11 @@ class Answer extends Model
 
     public function comments()
     {
-        return $this->morphMany(Comment::class, 'commentable');
+        return $this->morphMany(Comment::class, 'commentable')->when(auth()->user(), function ($query){
+            $query->withExists(['likes as is_liked' => function ($query) {
+                $query->where('user_id', auth()->user()->id);
+            }]);
+        });
     }
 
     public function getUserAnswers(int $id)

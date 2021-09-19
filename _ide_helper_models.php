@@ -12,9 +12,8 @@
 
 namespace App\Models{
 /**
- * Class Answer
+ * App\Models\Answer
  *
- * @package App\Models
  * @property int $id
  * @property string $body
  * @property int $is_solution
@@ -22,6 +21,13 @@ namespace App\Models{
  * @property int $question_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
+ * @property-read int|null $comments_count
+ * @property-read mixed $like_count
+ * @property-read bool $liked
+ * @property-read \Conner\Likeable\LikeCounter|null $likeCounter
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Conner\Likeable\Like[] $likes
+ * @property-read int|null $likes_count
  * @property-read \App\Models\Question $question
  * @property-read \App\Models\User $user
  * @method static \Database\Factories\AnswerFactory factory(...$parameters)
@@ -32,6 +38,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Answer whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Answer whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Answer whereIsSolution($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Answer whereLikedBy($userId = null)
  * @method static \Illuminate\Database\Eloquent\Builder|Answer whereQuestionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Answer whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Answer whereUserId($value)
@@ -44,15 +51,27 @@ namespace App\Models{
  * App\Models\Comment
  *
  * @property int $id
- * @property string $text
  * @property int $user_id
+ * @property string $text
+ * @property string $commentable_type
+ * @property int $commentable_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\User $author
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $commentable
+ * @property-read mixed $like_count
+ * @property-read bool $liked
+ * @property-read \Conner\Likeable\LikeCounter|null $likeCounter
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Conner\Likeable\Like[] $likes
+ * @property-read int|null $likes_count
  * @method static \Illuminate\Database\Eloquent\Builder|Comment newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Comment newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Comment query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Comment whereCommentableId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Comment whereCommentableType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Comment whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Comment whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Comment whereLikedBy($userId = null)
  * @method static \Illuminate\Database\Eloquent\Builder|Comment whereText($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Comment whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Comment whereUserId($value)
@@ -70,13 +89,16 @@ namespace App\Models{
  * @property int $rating
  * @property string|null $first_name
  * @property string|null $last_name
+ * @property string|null $education
+ * @property string|null $location
+ * @property string|null $skills
  * @property string|null $short_about
  * @property string|null $about
- * @property string|null $avatar
+ * @property mixed|string $avatar
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read mixed $full_name
- * @property-read mixed $link
+ * @property-read string $full_name
+ * @property-read string $link
  * @property-read \App\Models\User $user
  * @method static \Database\Factories\ProfileFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Profile newModelQuery()
@@ -85,11 +107,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Profile whereAbout($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Profile whereAvatar($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Profile whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Profile whereEducation($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Profile whereFirstName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Profile whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Profile whereLastName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Profile whereLocation($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Profile whereRating($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Profile whereShortAbout($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Profile whereSkills($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Profile whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Profile whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Profile whereUsername($value)
@@ -111,7 +136,15 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Answer[] $answers
  * @property-read int|null $answers_count
- * @property-read \App\Models\Profile $profile
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
+ * @property-read int|null $comments_count
+ * @property-read mixed $answer_is_written
+ * @property-read int $count_subscribers
+ * @property-read bool $is_subscribed
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Answer[] $solutions
+ * @property-read int|null $solutions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $subscribers
+ * @property-read int|null $subscribers_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
  * @property-read int|null $tags_count
  * @property-read \App\Models\User $user
@@ -138,11 +171,14 @@ namespace App\Models{
  * @property int $id
  * @property string|null $icon
  * @property string $title
+ * @property string|null $description
  * @property string $slug
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $followers
  * @property-read int|null $followers_count
+ * @property-read mixed $solution
+ * @property-read mixed $solved_questions
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Question[] $questions
  * @property-read int|null $questions_count
  * @method static \Database\Factories\TagFactory factory(...$parameters)
@@ -150,6 +186,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Tag newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Tag query()
  * @method static \Illuminate\Database\Eloquent\Builder|Tag whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Tag whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Tag whereIcon($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Tag whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Tag whereSlug($value)

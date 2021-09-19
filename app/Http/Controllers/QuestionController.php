@@ -43,27 +43,45 @@ class QuestionController extends Controller
         return redirect(route('question.show', ['id' => $question->id]));
     }
 
+
     public function show(Question $id)
     {
         $id->increment('views');
-        //dd($id->answer_is_written);
+        //dd($id->toArray());
         return view('question', ['question' => $id]);
     }
 
-    public function subscribe(Question $id)
+    public function subscribe(Request $request)
     {
-        if ($id) {
-            $id->subscribe();
-            return redirect()->back()->with('status', 'Вы подписались на вопрос');
+        $question_id = $request->input('question_id');
+        $question = Question::find($question_id);
+        if ($question) {
+            $question->subscribe();
+            return response()->json([
+                'msg' => 'Вы подписаны',
+                'count_subscribers' => $question->count_subscribers
+            ]);
+        } else {
+            return response()->json([
+                'error' => 'Bad request. Undefined target question',
+            ], 400);
         }
     }
 
-    public function unsubscribe(Question $id)
+    public function unsubscribe(Request $request)
     {
-        if ($id) {
-            $id->unsubscribe();
-            return redirect()->back()->with('status', 'Вы отписались от вопроса');
+        $question_id = $request->input('question_id');
+        $question = Question::find($question_id);
+        if ($question) {
+            $question->unsubscribe();
+            return response()->json([
+                'msg' => 'Подписаться',
+                'count_subscribers' => $question->count_subscribers
+            ]);
+        } else {
+            return response()->json([
+                'error' => 'Bad request. Undefined target question',
+            ], 400);
         }
-
     }
 }

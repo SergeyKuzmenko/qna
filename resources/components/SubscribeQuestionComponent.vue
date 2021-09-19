@@ -62,7 +62,9 @@ export default {
     methods: {
         subscribe: function () {
             this.loading = !this.loading
-            this.$http.post(`/question/${this.questionId}/subscribe`)
+            this.$http.post('/question/subscribe', {
+                question_id: this.questionId
+            })
                 .then((response) => {
                     if (response.status === 200) {
                         this.isSubscribed = !this.isSubscribed
@@ -72,12 +74,15 @@ export default {
                     }
                 })
                 .catch((e) => {
-                    // todo
+                    alert('Нужно авторизоваться')
+                    this.loading = !this.loading
                 })
         },
         unsubscribe: function () {
             this.loading = !this.loading
-            this.$http.post(`/question/${this.questionId}/unsubscribe`)
+            this.$http.post('/question/unsubscribe', {
+                question_id: this.questionId
+            })
                 .then((response) => {
                     if (response.status === 200) {
                         this.isSubscribed = !this.isSubscribed
@@ -87,7 +92,8 @@ export default {
                     }
                 })
                 .catch((e) => {
-                    // todo
+                    console.log(e)
+                    this.loading = false
                 })
         }
     }

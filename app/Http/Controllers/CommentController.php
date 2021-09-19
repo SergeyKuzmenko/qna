@@ -2,22 +2,53 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Answer;
 use App\Models\Comment;
 use App\Models\Question;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
-    public function questionStore(Request $request)
+
+    public function store(Request $request)
     {
-        $question = Question::findOrFail($request->question_id);
-        $comment = Comment::create([
+        $target = $request->input('type');
+        $id = $request->input('id');
+        $comment_text = $request->input('text');
+
+        $comment = new Comment([
             'user_id' => auth()->user()->id,
-            'text' => $request->text,
-            'commentable_type' => Question::class,
-            'commentable_id' => $question->id
+            'text' => $comment_text
         ]);
-        //$question->comments()->create($comment);
-        return back()->with('status', 'Коментарий добавлен');
+
+        if ($target) {
+            switch ($target) {
+                case 'question':
+                    $comment = Question::findOrFail($id)->comments()->save($comment);
+                    break;
+                case 'answer':
+                    $comment = Answer::findOrFail($id)->comments()->save($comment);
+                    break;
+            }
+        } else {
+            return response()->json([
+                'error' => 'Undefined target'
+            ], 400);
+        }
+        return response()->json([
+            'success' => true,
+            'comment_id' => $comment->id
+        ]);
+
+    }
+
+    public function edit()
+    {
+
+    }
+
+    public function destroy()
+    {
+
     }
 }
