@@ -8,7 +8,7 @@
 3. Выполните: `composer install`
 3. Выполните: `npm install && npm run dev`
 4. Создайте файл .env и установите параметры для подключения к базе данных.
-5. Выполните `php artisan key:generate`
-6. Выполните `php artisan migrate`
+5. Выполните: `php artisan key:generate`
+6. Выполните: `php artisan migrate`
 7. Выполните: `php artisan db:seed` (Опционально)
 8. Готово
