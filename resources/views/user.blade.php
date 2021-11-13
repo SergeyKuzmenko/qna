@@ -5,8 +5,15 @@
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
-                <div class="col-sm-6">
+                <div class="col-md-12">
                     <h1>{{ $user->profile->full_name }}</h1>
+                    @auth()
+                        @if($user->id === auth()->user()->id)
+                            <a href="{{ route('logout') }}" class="btn float-right">
+                                <i class="fas fa-sign-out-alt"></i> Выход
+                            </a>
+                        @endif
+                    @endauth()
                 </div>
             </div>
         </div>

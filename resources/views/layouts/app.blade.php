@@ -10,18 +10,21 @@
           rel="stylesheet">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('public/css/editor-light.css') }}" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js" integrity="sha512-MinqHeqca99q5bWxFNQEQpplMBFiUNrEwuuDj2rCSh1DgeeTXUgvgYIHZ1puBS9IKBkdfLMSk/ZWVDasa3Y/2A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/github.min.css" integrity="sha512-0aPQyyeZrWj9sCA46UlmWgKOP0mUipLQ6OZXu8l4IcAmD2u31EPEy9VcIMvl7SoAaKe8bLXZhYoMaE/in+gcgA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    @auth()
-        <script>
-            window._token = '{{ csrf_token() }}';
-        </script>
-    @endauth
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"
+            integrity="sha512-MinqHeqca99q5bWxFNQEQpplMBFiUNrEwuuDj2rCSh1DgeeTXUgvgYIHZ1puBS9IKBkdfLMSk/ZWVDasa3Y/2A=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/github.min.css"
+          integrity="sha512-0aPQyyeZrWj9sCA46UlmWgKOP0mUipLQ6OZXu8l4IcAmD2u31EPEy9VcIMvl7SoAaKe8bLXZhYoMaE/in+gcgA=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <script>
+        window._token = '{{ csrf_token() }}';
+    </script>
 
     @yield('styles')
 
 </head>
-<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed {{ (session('dark_mode')) ? 'dark-mode' : '' }}">
+<body
+    class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed {{ (session('dark_mode')) ? 'dark-mode' : '' }} {{ (session('sidebar')) ? '' : 'sidebar-collapse' }}">
 <div id="app">
     <div class="wrapper">
         @include('layouts.sections.navbar')
@@ -49,12 +52,7 @@
 <script>
     $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();
-        document.querySelectorAll('pre').forEach((el) => {
-            hljs.highlightElement(el);
-        });
-        document.querySelectorAll('code').forEach((el) => {
-            hljs.highlightElement(el);
-        });
+        //hljs.highlightAuto()
     });
 </script>
 

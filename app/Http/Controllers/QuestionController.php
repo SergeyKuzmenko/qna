@@ -4,13 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\NewQuestionRequest;
 use App\Models\Question;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Redirector;
 
 class QuestionController extends Controller
 {
@@ -70,6 +67,7 @@ class QuestionController extends Controller
     public function show(Question $id)
     {
         $id->increment('views');
+        //dd($id->toArray());
         return view('question', ['question' => $id]);
     }
 

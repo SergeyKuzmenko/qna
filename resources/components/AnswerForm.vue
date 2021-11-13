@@ -25,9 +25,6 @@
                                     <i class="far fa-envelope"></i> Опубликовать
                                 </button>
                             </div>
-                            <button type="reset" class="btn btn-default" @click="resetEditor">
-                                <i class="fas fa-times"></i> Очистить
-                            </button>
                         </div>
                     </form>
                 </div>

@@ -1907,9 +1907,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "AnswerForm",
@@ -2104,6 +2101,33 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "LikeComponent",
   props: ['target_type', 'target_id', 'is_liked', 'likes_count'],
@@ -2115,7 +2139,8 @@ __webpack_require__.r(__webpack_exports__);
       likesCount: this.$props.likes_count,
       likedText: 'Вам нравится',
       notLikedText: 'Нравится',
-      loading: false
+      loading: false,
+      likesList: []
     };
   },
   methods: {
@@ -2165,7 +2190,8 @@ __webpack_require__.r(__webpack_exports__);
         id: this.targetId
       }).then(function (response) {
         if (response.status === 200) {
-          console.log(response.data);
+          _this3.likesList = response.data.likes;
+          $('#who-liked-' + _this3.targetType + '-' + _this3.targetId).modal();
         }
       })["catch"](function (e) {
         alert('Нужно авторизоваться');
@@ -2330,6 +2356,24 @@ var app = new vue__WEBPACK_IMPORTED_MODULE_5__["default"]({
     'subscribe-question-button': _components_SubscribeQuestionComponent__WEBPACK_IMPORTED_MODULE_2__["default"],
     'answer-form': _components_AnswerForm__WEBPACK_IMPORTED_MODULE_3__["default"],
     'comment-form': _components_CommentForm__WEBPACK_IMPORTED_MODULE_4__["default"]
+  },
+  data: {
+    sidebarOpen: true
+  },
+  methods: {
+    toggleSidebar: function toggleSidebar() {
+      this.$http.post('/app/toggleSidebar');
+    },
+    deleteAnswer: function deleteAnswer(id) {
+      this.$http.post('/answer/delete', {
+        answer_id: id
+      }).then(function (response) {
+        if (response.data.success) {
+          $("#answer-".concat(id)).hide();
+        }
+      })["catch"](function (e) {//
+      });
+    }
   },
   el: '#app'
 });
@@ -41146,20 +41190,7 @@ var render = function() {
                         _vm._v(" Опубликовать\n                            ")
                       ]
                     )
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-default",
-                      attrs: { type: "reset" },
-                      on: { click: _vm.resetEditor }
-                    },
-                    [
-                      _c("i", { staticClass: "fas fa-times" }),
-                      _vm._v(" Очистить\n                        ")
-                    ]
-                  )
+                  ])
                 ])
               ])
             ])
@@ -41414,10 +41445,119 @@ var render = function() {
         },
         [_vm._v("\n            " + _vm._s(_vm.likesCount) + "\n        ")]
       )
-    ])
+    ]),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        staticClass: "modal",
+        attrs: {
+          id: "who-liked",
+          id: "who-liked-" + _vm.targetType + "-" + _vm.targetId,
+          tabindex: "-1",
+          role: "dialog"
+        }
+      },
+      [
+        _c(
+          "div",
+          {
+            staticClass: "modal-dialog modal-dialog-centered",
+            attrs: { role: "document" }
+          },
+          [
+            _c("div", { staticClass: "modal-content" }, [
+              _vm._m(0),
+              _vm._v(" "),
+              _c("div", { staticClass: "modal-body" }, [
+                _vm.likesList.length
+                  ? _c(
+                      "ul",
+                      { staticClass: "list-group" },
+                      _vm._l(_vm.likesList, function(user) {
+                        return _c(
+                          "li",
+                          { key: user.id, staticClass: "list-group-item" },
+                          [
+                            _c(
+                              "a",
+                              { attrs: { href: "/user/" + user.username } },
+                              [
+                                _c("img", {
+                                  staticClass: "img-circle img-size-32",
+                                  attrs: {
+                                    src: user.avatar,
+                                    alt: user.full_name
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _c("b", { staticClass: "ml-1" }, [
+                                  _vm._v(_vm._s(user.full_name))
+                                ]),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass: "ml-1",
+                                    staticStyle: { color: "gray" }
+                                  },
+                                  [_vm._v("@" + _vm._s(user.username))]
+                                ),
+                                _vm._v(" "),
+                                user.is_author
+                                  ? _c("span", { staticClass: "float-right" }, [
+                                      _c("i", {
+                                        staticClass: "far fa-star",
+                                        staticStyle: { color: "darkgreen" },
+                                        attrs: { title: "Автор вопроса" }
+                                      })
+                                    ])
+                                  : _vm._e()
+                              ]
+                            )
+                          ]
+                        )
+                      }),
+                      0
+                    )
+                  : _c("ul", { staticClass: "list-group" }, [
+                      _c("span", { staticClass: "lead" }, [
+                        _vm._v("Ответ никому не нравится")
+                      ])
+                    ])
+              ])
+            ])
+          ]
+        )
+      ]
+    )
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
+      _c("h5", { staticClass: "modal-title" }, [
+        _vm._v("Оценили как «Нравится»")
+      ]),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-label": "Close"
+          }
+        },
+        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      )
+    ])
+  }
+]
 render._withStripped = true
 
 

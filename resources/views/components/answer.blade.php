@@ -1,4 +1,4 @@
-<div class="answer-item">
+<div class="answer-item" id="answer-{{ $answer->id }}">
     <div class="card {{ $answer->is_solution ? 'card-outline card-success' : '' }}">
         <div class="card-body">
             <div class="tab-content">
@@ -65,13 +65,12 @@
                 <div class="dropdown-menu" aria-labelledby="answer-{{ $answer->id }}-menu">
                     @auth()
                         @if(auth()->user()->id === $answer->user_id)
-                            <a class="dropdown-item" href="#edit-{{ $answer->id }}">Редактировать</a>
-                            <a class="dropdown-item text-danger" href="#delete-answer-{{ $answer->id }}">Удалить</a>
+                            <button class="dropdown-item">Редактировать</button>
+                            <button class="dropdown-item text-danger" @click="deleteAnswer({{ $answer->id }})">Удалить</button>
                             <div class="dropdown-divider"></div>
                         @endif
                     @endauth
-                    <a class="dropdown-item" href="#who-liked-{{ $answer->id }}">Кому понравилось</a>
-                    <a class="dropdown-item text-danger" href="#abuse-answer-{{ $answer->id }}">Пожаловаться</a>
+                    <button class="dropdown-item text-danger">Пожаловаться</button>
                 </div>
             </div>
         </div>

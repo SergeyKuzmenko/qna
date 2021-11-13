@@ -1,7 +1,7 @@
-<nav class="main-header navbar navbar-expand navbar-light {{ (session('dark_mode')) ? 'navbar-dark' : '' }}        ">
+<nav class="main-header navbar navbar-expand navbar-light {{ (session('dark_mode')) ? 'navbar-dark' : '' }}" @click="toggleSidebar">
     <ul class="navbar-nav">
         <li class="nav-item">
-            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+            <span class="nav-link" data-widget="pushmenu" role="button"><i class="fas fa-bars"></i></span>
         </li>
     </ul>
     <a href="{{ url('/') }}" class="navbar-brand d-flex d-md-none d-lg-none">
@@ -31,11 +31,7 @@
         </li>
         <li class="nav-item">
             <a class="nav-link dark-mode-toggle"
-               @if(!session('dark_mode'))
-               href="{{ route('dark-mode', ['mode' => 'on']) }}"
-               @else
-               href="{{ route('dark-mode', ['mode' => 'off']) }}"
-               @endif
+               href="{{ route('dark-side') }}"
                role="button" data-toggle="tooltip" data-placement="bottom" title="Тёмная тема">
                 <i class="far fa-moon"></i>
             </a>

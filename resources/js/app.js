@@ -22,5 +22,26 @@ const app = new Vue({
         'answer-form': AnswerForm,
         'comment-form': CommentForm
     },
+    data: {
+        sidebarOpen: true
+    },
+    methods: {
+        toggleSidebar() {
+            this.$http.post('/app/toggleSidebar')
+        },
+        deleteAnswer(id) {
+            this.$http.post('/answer/delete', {
+                answer_id: id
+            })
+                .then((response) => {
+                    if (response.data.success) {
+                        $(`#answer-${id}`).hide();
+                    }
+                })
+                .catch((e) => {
+                    //
+                })
+        }
+    },
     el: '#app'
 })

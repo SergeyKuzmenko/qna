@@ -42,6 +42,33 @@
                 {{ likesCount }}
             </button>
         </div>
+        <div class="modal" id="who-liked" :id="'who-liked-'+ targetType + '-' + targetId" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Оценили как «Нравится»</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="list-group" v-if="likesList.length">
+                            <li class="list-group-item" v-for="user in likesList" :key="user.id">
+                                <a :href="'/user/' + user.username">
+                                 <img :src="user.avatar" :alt="user.full_name" class="img-circle img-size-32">
+                                    <b class="ml-1">{{ user.full_name}}</b>
+                                    <span class="ml-1" style="color:gray;">@{{user.username}}</span>
+                                    <span class="float-right" v-if="user.is_author"><i class="far fa-star" style="color:darkgreen" title="Автор вопроса"></i></span>
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="list-group" v-else>
+                            <span class="lead">Ответ никому не нравится</span>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -63,6 +90,7 @@ export default {
             likedText: 'Вам нравится',
             notLikedText: 'Нравится',
             loading: false,
+            likesList: []
         }
     },
     methods: {
@@ -111,7 +139,8 @@ export default {
             })
                 .then((response) => {
                     if (response.status === 200) {
-                        console.log(response.data)
+                        this.likesList = response.data.likes
+                        $('#who-liked-'+ this.targetType + '-' + this.targetId).modal();
                     }
                 })
                 .catch((e) => {

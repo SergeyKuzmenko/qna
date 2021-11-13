@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Answer;
 use App\Models\Question;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -48,8 +49,22 @@ class AnswerController extends Controller
     /**
      * @todo
      */
-    public function destroy()
+    public function destroy(Request $request)
     {
+        $answer_id = $request->input('answer_id');
+        $answer = Answer::findOrFail($answer_id);
+        if ($answer->user_id === auth()->user()->id) {
+            $answer->delete();
+            return response()->json([
+                'success' => true
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'error' => 'Access denied'
+            ],403);
+        }
+
 
     }
 }

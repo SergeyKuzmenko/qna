@@ -20,7 +20,8 @@ Route::get('/', [App\Http\Controllers\QuestionController::class, 'all'])->name('
 Route::get('/q/{id}', [App\Http\Controllers\QuestionController::class, 'show'])->where('id', '[0-9]+')->name('question.show');
 
 
-Route::get('/dark-mode={mode}', [App\Http\Controllers\Controller::class, 'darkMode'])->name('dark-mode');
+Route::get('/dark-side', [App\Http\Controllers\Controller::class, 'darkMode'])->name('dark-side');
+Route::post('/app/toggleSidebar', [App\Http\Controllers\Controller::class, 'toggleSidebar'])->name('toggleSidebar');
 
 Route::get('/tags', [App\Http\Controllers\TagController::class, 'all'])->name('tags.all');
 Route::prefix('tag/{slug}')
@@ -63,6 +64,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::prefix('answer')->group(function () {
         Route::post('/new', [App\Http\Controllers\AnswerController::class, 'store'])->name('answer.new');
+        Route::post('/delete', [App\Http\Controllers\AnswerController::class, 'destroy'])->name('answer.delete');
+
 
     });
 

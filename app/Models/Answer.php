@@ -3,13 +3,10 @@
 namespace App\Models;
 
 use Conner\Likeable\Likeable;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Support\Traits\Conditionable;
 
 class Answer extends Model
 {
@@ -52,22 +49,12 @@ class Answer extends Model
      */
     public function comments()
     {
-        return $this->morphMany(Comment::class, 'commentable')->when(auth()->user(), function ($query) {
+        return $this->morphMany(Comment::class, 'commentable')
+            ->when(auth()->user(), function ($query) {
             $query->withExists(['likes as is_liked' => function ($query) {
                 $query->where('user_id', auth()->user()->id);
             }]);
         });
-    }
-
-    /**
-     * @param int $id
-     * @return Collection
-     */
-    public function getUserAnswers(int $id)
-    {
-        return $this->with('question', function ($query) {
-            $query->select(['id', 'title', 'created_at'])->without(['tags', 'user', 'answers']);
-        })->where('user_id', $id)->get();
     }
 
 }

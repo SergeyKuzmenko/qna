@@ -45,7 +45,6 @@
                                     <div class="dropdown-divider"></div>
                                 @endif
                             @endauth
-                            <a class="dropdown-item" href="#who-liked-{{ $comment->id }}">Кому нравится</a>
                             <a class="dropdown-item text-danger" href="#abuse-comment-{{ $comment->id }}">Пожаловаться</a>
                         </div>
                     </div>

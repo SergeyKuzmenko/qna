@@ -16,13 +16,15 @@ class Controller extends BaseController
      * @param $mode
      * @return RedirectResponse
      */
-    public function darkMode($mode)
+    public function darkMode()
     {
-        if ($mode == 'on') {
-            session(['dark_mode' => 1]);
-        } elseif ($mode == 'off') {
-            session(['dark_mode' => 0]);
-        }
+        session(['dark_mode' => !session('dark_mode')]);
         return redirect()->back();
+    }
+
+    public function toggleSidebar()
+    {
+        session(['sidebar' => !session('sidebar')]);
+        return response()->json(['success' => true, 'sidebar' => session('sidebar')]);
     }
 }

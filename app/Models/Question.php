@@ -139,6 +139,8 @@ class Question extends Model
     }
 
     /**
+     * @param $tag
+     * @param string $by
      * @return Builder|Model|object|null
      */
     public function getQuestionsByTag($tag, $by = 'new')

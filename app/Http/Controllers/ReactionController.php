@@ -44,7 +44,6 @@ class ReactionController extends Controller
                 $target = null;
                 break;
         }
-        return $this->target;
     }
 
     /**
@@ -93,7 +92,9 @@ class ReactionController extends Controller
     public function likes()
     {
         if ($this->target) {
-            $users = Profile::whereIn('id', $this->target->likes->pluck('id'))->get();
+            $users = Profile::whereIn('id', $this->target->likes->pluck('user_id'))
+                ->select(['id', 'first_name', 'last_name', 'username', 'avatar', 'short_about'])
+                ->get();
             return response()->json([
                 'success' => true,
                 'likes' => $users
