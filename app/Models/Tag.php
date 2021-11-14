@@ -4,14 +4,11 @@ namespace App\Models;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-/**
- * Class Tag
- * @package App\Models
- */
 class Tag extends Model
 {
 
@@ -23,19 +20,30 @@ class Tag extends Model
     protected $fillable = ['title', 'slug', 'description', 'icon'];
 
     /**
-     * @return BelongsToMany
+     * @return LengthAwarePaginator
      */
-    public function questions()
+    public function getTagsByQuestions()
     {
-        return $this->belongsToMany(Question::class, 'question_tag');
+        if (auth()->user()) {
+            return $this->withExists(['followers as is_follow' => function ($query) {
+                $query->where('user_id', auth()->id());
+            }])
+                ->withCount(['questions', 'followers'])
+                ->orderBy('questions_count', 'desc')
+                ->paginate(20);
+        } else {
+            return $this->withCount(['questions', 'followers'])
+                ->orderBy('questions_count', 'desc')
+                ->paginate(20);
+        }
     }
 
     /**
-     * @return BelongsToMany
+     * @return LengthAwarePaginator
      */
-    public function followers()
+    public function getTagsByDefault()
     {
-        return $this->belongsToMany(User::class, 'user_tag')->withCount(['questions', 'answers']);
+        return $this->getTagsByFollowers();
     }
 
     /**
@@ -55,34 +63,6 @@ class Tag extends Model
                 ->orderBy('followers_count', 'desc')
                 ->paginate(20);
         }
-
-    }
-
-    /**
-     * @return LengthAwarePaginator
-     */
-    public function getTagsByQuestions()
-    {
-        if (auth()->user()) {
-            return $this->withExists(['followers as is_follow' => function ($query) {
-                $query->where('user_id', auth()->user()->id);
-            }])
-                ->withCount(['questions', 'followers'])
-                ->orderBy('questions_count', 'desc')
-                ->paginate(20);
-        } else {
-            return $this->withCount(['questions', 'followers'])
-                ->orderBy('questions_count', 'desc')
-                ->paginate(20);
-        }
-    }
-
-    /**
-     * @return LengthAwarePaginator
-     */
-    public function getTagsByDefault()
-    {
-        return $this->getTagsByFollowers();
     }
 
     /**
@@ -105,8 +85,7 @@ class Tag extends Model
                 }])
                 ->with(['followers' => function ($query) {
                     $query->with('profile')->limit(3);
-                }])
-                ->first();
+                }])->first();
         } else {
             return $this
                 ->where('id', $tagId)
@@ -120,56 +99,59 @@ class Tag extends Model
                 }])
                 ->with(['followers' => function ($query) {
                     $query->with('profile')->limit(3);
-                }])
-                ->first();
+                }])->first();
         }
     }
 
     /**
-     * @return mixed
+     * @return Collection
      */
-    public function getSolvedQuestionsAttribute()
+    public function solvedQuestions()
     {
-        $questions = $this->questions()->with('answers')->get();
-        return $questions->filter->hasSolutions();
+        return $this->questions()->whereRelation('answers', 'is_solution', 1)->get();
     }
 
     /**
-     * @return mixed
+     * @return float
      */
     public function getSolutionAttribute()
     {
-        if ($this->questions->count() && $this->solvedQuestions->count()) {
-
-            $rate = ($this->solvedQuestions->count() * 100) / $this->questions->count();
-        } else {
-            $rate = 0;
+        if ($this->questions()->count() > 0 && $this->solvedQuestions()->count() > 0) {
+            return $this->attributes['solution'] = floor(($this->solvedQuestions()->count() * 100) / $this->questions()->count());
         }
-        return floor($rate);
+        return $this->attributes['solution'] = 0.0;
     }
 
     /**
-     * @return false|int
+     * @return BelongsToMany
+     */
+    public function questions()
+    {
+        return $this->belongsToMany(Question::class, 'question_tag');
+    }
+
+    /**
+     * @return array
      */
     public function subscribe()
     {
-        if (auth()->guest()) {
-            return false;
-        } else {
-            $this->followers()->syncWithoutDetaching(auth()->user()->id);
-        }
+        return $this->followers()->syncWithoutDetaching(auth()->id());
     }
 
     /**
-     * @return false|int
+     * @return BelongsToMany
+     */
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'user_tag')->withCount(['questions', 'answers']);
+    }
+
+    /**
+     * @return int
      */
     public function unsubscribe()
     {
-        if (auth()->guest()) {
-            return false;
-        } else {
-            $this->followers()->detach(auth()->user()->id);
-        }
+        return $this->followers()->detach(auth()->id());
     }
 
 }

@@ -37,18 +37,12 @@ class TagController extends Controller
 
     /**
      * @param $slug
-     * @return Application|Factory|View|void
-     * @throws HttpException
-     * @throws NotFoundHttpException
+     * @return View|NotFoundHttpException
      */
     public function info($slug)
     {
-        $tag = Tag::where('slug', $slug)->first();
-        if ($tag) {
-            return view('tag', ['tag' => $tag->getTagInfo($tag->id)]);
-        } else {
-            return abort(404);
-        }
+        $tag = Tag::query()->whereSlug($slug)->first();
+        return ($tag) ? view('tag', ['tag' => $tag->getTagInfo($tag->id)]) : abort(404);
     }
 
     /**

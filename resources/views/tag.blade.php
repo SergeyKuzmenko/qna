@@ -42,7 +42,7 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="description-block">
-                                        <h5 class="description-header">0%</h5>
+                                        <h5 class="description-header">{{ $tag->solution }}%</h5>
                                         <span class="description-text">Решено</span>
                                     </div>
                                 </div>
