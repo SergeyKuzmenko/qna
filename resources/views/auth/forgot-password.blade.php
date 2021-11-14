@@ -6,7 +6,7 @@
     <div class="login-box">
         <div class="card card-outline card-primary">
             <div class="card-header text-center">
-                <a href="{{ url('/') }}" class="h1"><b>{{ env('APP_NAME') }}.</b>Пароль</a>
+                <a href="{{ url('/') }}" class="h1">Пароль</a>
             </div>
             <div class="card-body">
                 <p class="login-box-msg">Забыли свой пароль? Здесь вы можете легко восстановить новый пароль.</p>

@@ -6,10 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/**
- * Class Profile
- * @package App\Models
- */
 class Profile extends Model
 {
     use HasFactory;
@@ -51,7 +47,7 @@ class Profile extends Model
      */
     public function getAvatarAttribute()
     {
-        return ($this->attributes['avatar']) ? $this->attributes['avatar'] : asset('img/default.png');
+        return $this->attributes['avatar'] ? $this->attributes['avatar'] : asset('img/default.png');
     }
 
     /**

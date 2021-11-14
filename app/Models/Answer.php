@@ -27,7 +27,6 @@ class Answer extends Model
      */
     public $timestamps = true;
 
-
     /**
      * @return BelongsTo
      */

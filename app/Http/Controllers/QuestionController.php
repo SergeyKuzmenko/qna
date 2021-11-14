@@ -67,7 +67,6 @@ class QuestionController extends Controller
     public function show(Question $id)
     {
         $id->increment('views');
-        //dd($id->toArray());
         return view('question', ['question' => $id]);
     }
 
@@ -78,7 +77,7 @@ class QuestionController extends Controller
     public function subscribe(Request $request)
     {
         $question_id = $request->input('question_id');
-        $question = Question::find($question_id);
+        $question = Question::query()->find($question_id);
         if ($question) {
             $question->subscribe();
             return response()->json([
@@ -99,7 +98,7 @@ class QuestionController extends Controller
     public function unsubscribe(Request $request)
     {
         $question_id = $request->input('question_id');
-        $question = Question::find($question_id);
+        $question = Question::query()->find($question_id);
         if ($question) {
             $question->unsubscribe();
             return response()->json([

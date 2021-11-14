@@ -17,14 +17,14 @@ class CommentController extends Controller
      * @return JsonResponse
      * @throws ModelNotFoundException
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $target = $request->input('type');
         $id = $request->input('id');
         $comment_text = $request->input('text');
 
         $comment = new Comment([
-            'user_id' => auth()->user()->id,
+            'user_id' => auth()->id(),
             'text' => $comment_text
         ]);
 
@@ -52,7 +52,7 @@ class CommentController extends Controller
     /**
      * @todo
      */
-    public function edit()
+    public function edit(): void
     {
 
     }
@@ -60,7 +60,7 @@ class CommentController extends Controller
     /**
      * @todo
      */
-    public function destroy()
+    public function destroy(): void
     {
 
     }

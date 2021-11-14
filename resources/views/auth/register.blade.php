@@ -6,7 +6,7 @@
     <div class="register-box">
         <div class="card card-outline card-primary">
             <div class="card-header text-center">
-                <a href="{{ url('/') }}" class="h1"><b>{{ env('APP_NAME') }}.</b>Регистрация</a>
+                <a href="{{ url('/') }}" class="h1">Регистрация</a>
             </div>
             <div class="card-body">
                 <p class="login-box-msg">Регистрация нового аккаунта</p>

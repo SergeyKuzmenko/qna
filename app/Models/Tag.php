@@ -104,20 +104,13 @@ class Tag extends Model
     }
 
     /**
-     * @return Collection
-     */
-    public function solvedQuestions()
-    {
-        return $this->questions()->whereRelation('answers', 'is_solution', 1)->get();
-    }
-
-    /**
      * @return float
      */
     public function getSolutionAttribute()
     {
         if ($this->questions()->count() > 0 && $this->solvedQuestions()->count() > 0) {
-            return $this->attributes['solution'] = floor(($this->solvedQuestions()->count() * 100) / $this->questions()->count());
+            return $this->attributes['solution'] =
+                floor(($this->solvedQuestions()->count() * 100) / $this->questions()->count());
         }
         return $this->attributes['solution'] = 0.0;
     }
@@ -128,6 +121,14 @@ class Tag extends Model
     public function questions()
     {
         return $this->belongsToMany(Question::class, 'question_tag');
+    }
+
+    /**
+     * @return Collection
+     */
+    public function solvedQuestions()
+    {
+        return $this->questions()->whereRelation('answers', 'is_solution', 1)->get();
     }
 
     /**
@@ -153,5 +154,4 @@ class Tag extends Model
     {
         return $this->followers()->detach(auth()->id());
     }
-
 }

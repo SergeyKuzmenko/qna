@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,15 +15,13 @@ class Question extends Model
     use HasFactory;
 
     /**
-     * @var array[]
-     */
-    protected $fillable = ['title', 'body', 'user_id', 'complexity'];
-
-    /**
      * @var bool
      */
     public $timestamps = true;
-
+    /**
+     * @var array[]
+     */
+    protected $fillable = ['title', 'body', 'user_id', 'complexity'];
     /**
      * @var array[]
      */
@@ -44,29 +41,9 @@ class Question extends Model
     }
 
     /**
-     * @return BelongsToMany
-     */
-    public function tags()
-    {
-        return $this->belongsToMany(Tag::class, 'question_tag');
-    }
-
-    /**
      * @return HasMany
      */
-    public function answers()
-    {
-        return $this->hasMany(Answer::class)->when(auth()->user(), function ($query) {
-            $query->withExists(['likes as is_liked' => function ($query) {
-                $query->where('user_id', auth()->user()->id);
-            }]);
-        });
-    }
-
-    /**
-     * @return HasMany
-     */
-    public function solutions()
+    public function solutions(): HasMany
     {
         return $this->hasMany(Answer::class)->where('is_solution', true);
     }
@@ -74,21 +51,13 @@ class Question extends Model
     /**
      * @return MorphMany
      */
-    public function comments()
+    public function comments(): MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable')->when(auth()->user(), function ($query) {
             $query->withExists(['likes as is_liked' => function ($query) {
-                $query->where('user_id', auth()->user()->id);
+                $query->where('user_id', auth()->id());
             }]);
         });
-    }
-
-    /**
-     * @return BelongsToMany
-     */
-    public function subscribers()
-    {
-        return $this->belongsToMany(User::class, 'question_subscriber');
     }
 
     /**
@@ -96,7 +65,28 @@ class Question extends Model
      */
     public function getAnswerIsWrittenAttribute()
     {
-        return ($this->answers()->where('user_id', auth()->user()->id)->count()) ? true : false;
+        return !!$this->answers()->where('user_id', auth()->id())->count();
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function answers(): HasMany
+    {
+        return $this->hasMany(Answer::class)->when(auth()->user(), function ($query) {
+            $query->withExists(['likes as is_liked' => function ($query) {
+                $query->where('user_id', auth()->id());
+            }]);
+        });
+    }
+
+    /**
+     * @return LengthAwarePaginator
+     */
+    public function getAllQuestionsByInteresting()
+    {
+        // todo...
+        return $this->getAllQuestionsByNew();
     }
 
     /**
@@ -108,15 +98,6 @@ class Question extends Model
             ->without(['answers', 'comments'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
-    }
-
-    /**
-     * @return LengthAwarePaginator
-     */
-    public function getAllQuestionsByInteresting()
-    {
-        // todo...
-        return $this->getAllQuestionsByNew();
     }
 
     /**
@@ -141,66 +122,75 @@ class Question extends Model
     /**
      * @param $tag
      * @param string $by
-     * @return Builder|Model|object|null
+     * @return LengthAwarePaginator
      */
     public function getQuestionsByTag($tag, $by = 'new')
     {
-        return $this
-            ->whereHas('tags', function ($query) use ($tag) {
-                $query->whereIn('tags.id', $tag);
-            })
+        return self::whereHas('tags', function ($query) use ($tag) {
+            $query->whereIn('tags.id', $tag);
+        })
             ->withCount('answers')
             ->with(['user.profile', 'tags'])
-            ->when($by == 'new', function ($query) {
+            ->when($by === 'new', function ($query) {
                 $query->orderBy('created_at');
             })
-            ->when($by == 'interesting', function ($query) {
+            ->when($by === 'interesting', function ($query) {
                 $query->orderBy('created_at');
             })
-            ->when($by == 'without_answers', function ($query) {
+            ->when($by === 'without_answers', function ($query) {
                 $query->doesntHave('answers');
-            })
-            ->paginate(20);
+            })->paginate(20);
     }
 
     /**
      * @param $request
-     * @return $this
+     * @return Question|Model
      */
     public function newQuestion($request)
     {
-        $this->title = $request->title;
-        $this->body = $request->body;
-        $this->user_id = auth()->user()->id;
-        $this->complexity = $request->complexity;
-        $this->save();
-        $this->tags()->attach($request->tags);
-        $this->subscribe();
-        return $this;
+        $question = Question::query()->create([
+            'title' => $request->title,
+            'body' => $request->body,
+            'user_id' => auth()->id(),
+            'complexity' => $request->complexity
+        ]);
+        if ($question) {
+            $question->tags()->attach($request->tags);
+            $question->subscribe();
+        }
+        return $question;
     }
 
     /**
-     * @return array|false
+     * @return BelongsToMany
+     */
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'question_tag');
+    }
+
+    /**
+     * @return array
      */
     public function subscribe()
     {
-        if (auth()->guest()) {
-            return false;
-        } else {
-            return $this->subscribers()->syncWithoutDetaching(auth()->user()->id);
-        }
+        return $this->subscribers()->syncWithoutDetaching(auth()->id());
     }
 
     /**
-     * @return false|int
+     * @return BelongsToMany
+     */
+    public function subscribers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'question_subscriber');
+    }
+
+    /**
+     * @return int
      */
     public function unsubscribe()
     {
-        if (auth()->guest()) {
-            return false;
-        } else {
-            return $this->subscribers()->detach(auth()->user()->id);
-        }
+        return $this->subscribers()->detach(auth()->id());
     }
 
     /**
@@ -208,10 +198,7 @@ class Question extends Model
      */
     public function getIsSubscribedAttribute()
     {
-        if (auth()->user()) {
-            return $this->subscribers()->whereIn('user_id', [auth()->user()->id])->count() ? true : false;
-        }
-        return false;
+        return !!$this->subscribers()->whereIn('user_id', [auth()->id()])->count();
     }
 
     /**
