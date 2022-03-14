@@ -1,6 +1,6 @@
-<nav class="main-header navbar navbar-expand navbar-light {{ (session('dark_mode')) ? 'navbar-dark' : '' }}" @click="toggleSidebar">
+<nav class="main-header navbar navbar-expand navbar-light {{ (session('dark_mode')) ? 'navbar-dark' : '' }}">
     <ul class="navbar-nav">
-        <li class="nav-item">
+        <li class="nav-item" @click="toggleSidebar">
             <span class="nav-link" data-widget="pushmenu" role="button"><i class="fas fa-bars"></i></span>
         </li>
     </ul>

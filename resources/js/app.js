@@ -29,8 +29,8 @@ const app = new Vue({
         toggleSidebar() {
             this.$http.post('/app/toggleSidebar')
         },
-        deleteAnswer(id) {
-            this.$http.post('/answer/delete', {
+        async deleteAnswer(id) {
+            await this.$http.post('/answer/delete', {
                 answer_id: id
             })
                 .then((response) => {

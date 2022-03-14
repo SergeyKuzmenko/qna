@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback"
           rel="stylesheet">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
-    <link href="{{ asset('public/css/editor-light.css') }}" rel="stylesheet">
+{{--    <link href="{{ asset('public/css/editor-light.css') }}" rel="stylesheet">--}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"
             integrity="sha512-MinqHeqca99q5bWxFNQEQpplMBFiUNrEwuuDj2rCSh1DgeeTXUgvgYIHZ1puBS9IKBkdfLMSk/ZWVDasa3Y/2A=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>

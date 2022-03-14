@@ -65,8 +65,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::prefix('answer')->group(function () {
         Route::post('/new', [App\Http\Controllers\AnswerController::class, 'store'])->name('answer.new');
         Route::post('/delete', [App\Http\Controllers\AnswerController::class, 'destroy'])->name('answer.delete');
-
-
     });
 
     Route::prefix('reaction')->group(function () {

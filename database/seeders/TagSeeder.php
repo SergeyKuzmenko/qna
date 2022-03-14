@@ -106,15 +106,6 @@ class TagSeeder extends Seeder
      */
     public function run(Generator $faker)
     {
-        $allTags = [];
-        foreach ($this->tags as $tag) {
-            $allTags[] = [
-                'title' => $tag['title'],
-                'slug' => Str::slug($tag['title']),
-                'description' => $faker->paragraph(),
-                'icon' => 'img/tags/' . $tag['icon']
-            ];
-        }
-        Tag::insert($allTags);
+        Tag::factory()->create();
     }
 }

@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class TagFactory extends Factory
 {
-    private $tags = [
+    private array $tags = [
         [
             'title' => 'AJAX',
             'icon' => 'ajax.png'
@@ -91,7 +91,7 @@ class TagFactory extends Factory
         ]
     ];
 
-    public function definition()
+    public function definition(): array
     {
         $allTags = [];
         foreach ($this->tags as $tag) {
